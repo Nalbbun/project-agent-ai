@@ -260,6 +260,22 @@ export type DashboardSummary = {
   project_hotspots: DashboardProjectApprovalStat[];
 };
 
+export type FoundationGuardItem = {
+  code: string;
+  title: string;
+  status: 'pass' | 'warn' | 'fail';
+  summary: string;
+  evidence: Record<string, unknown>;
+  required: boolean;
+};
+
+export type FoundationGuardSnapshot = {
+  status: 'pass' | 'warn' | 'fail';
+  generated_at: string;
+  items: FoundationGuardItem[];
+  warnings: string[];
+};
+
 export type ProjectKnowledge = {
   id: string;
   project_id: string;

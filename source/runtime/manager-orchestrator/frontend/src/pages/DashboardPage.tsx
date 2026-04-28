@@ -2,14 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api, buildDashboardStreamUrl } from '../api/client';
 import StatCard from '../components/StatCard';
-import type { DashboardSummary } from '../types';
+import type { DashboardSummary, FoundationGuardSnapshot } from '../types';
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [foundation, setFoundation] = useState<FoundationGuardSnapshot | null>(null);
   const [streamStatus, setStreamStatus] = useState<'connecting' | 'live' | 'closed'>('connecting');
 
   useEffect(() => {
     api.dashboard().then(setSummary).catch(console.error);
+    api.foundationGuard().then(setFoundation).catch(console.error);
     const source = new EventSource(buildDashboardStreamUrl());
     source.addEventListener('snapshot', (event) => {
       setSummary(JSON.parse((event as MessageEvent).data) as DashboardSummary);
@@ -45,6 +47,25 @@ export default function DashboardPage() {
         <StatCard title="Workers" value={summary.worker_count} />
         <StatCard title="Dead Letter" value={summary.dead_lettered_count} />
       </section>
+      {foundation ? (
+        <section className="card">
+          <div className="split">
+            <h3>Foundation Guard</h3>
+            <span className={`status-pill ${foundation.status}`}>{foundation.status}</span>
+          </div>
+          <div className="foundation-grid">
+            {foundation.items.map((item) => (
+              <div key={item.code} className={`foundation-item ${item.status}`}>
+                <div className="split">
+                  <strong>{item.title}</strong>
+                  <span className={`status-pill ${item.status}`}>{item.status}</span>
+                </div>
+                <span className="muted">{item.summary}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
       <section className="card-grid">
         <div className="card">
           <div className="split"><h3>Approval Alerts</h3><Link to="/approvals" className="secondary">Approval Inbox</Link></div>

@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlmodel import Session, select
 
-from app.api.routes import agents, approvals, artifacts, auth, dashboard, projects, runs, workers
+from app.api.routes import agents, approvals, artifacts, auth, dashboard, foundation, projects, runs, workers
 from app.core.config import get_settings
 from app.db.session import engine, wait_for_db
 from app.models.run import OrchestrationRun
@@ -83,6 +83,7 @@ def health() -> dict:
 
 app.include_router(auth.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
+app.include_router(foundation.router, prefix="/api")
 app.include_router(agents.router, prefix="/api")
 app.include_router(projects.router, prefix="/api")
 app.include_router(runs.router, prefix="/api")

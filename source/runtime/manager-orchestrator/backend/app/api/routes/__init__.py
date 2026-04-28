@@ -1,3 +1,3 @@
-from . import agents, approvals, artifacts, auth, dashboard, projects, runs, workers
+from . import agents, approvals, artifacts, auth, dashboard, foundation, projects, runs, workers
 
-__all__ = ["agents", "approvals", "artifacts", "auth", "dashboard", "projects", "runs", "workers"]
+__all__ = ["agents", "approvals", "artifacts", "auth", "dashboard", "foundation", "projects", "runs", "workers"]
