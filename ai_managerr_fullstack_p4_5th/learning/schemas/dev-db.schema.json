@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dev DB Agent Training Sample",
+  "type": "object",
+  "$defs": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "source",
+        "version"
+      ],
+      "additionalProperties": true
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "role": {
+      "const": "dev-db"
+    },
+    "lang": {
+      "enum": [
+        "ko",
+        "en",
+        "mixed"
+      ]
+    },
+    "domain": {
+      "type": "string"
+    },
+    "difficulty": {
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ]
+    },
+    "input": {
+      "type": "object",
+      "properties": {
+        "task": {
+          "type": "string"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "task"
+      ],
+      "additionalProperties": true
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "ddl": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "indexes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "migration": {
+          "type": "object",
+          "properties": {
+            "tool": {
+              "type": "string"
+            },
+            "file": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tool",
+            "file"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ddl",
+        "migration"
+      ],
+      "additionalProperties": false
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    }
+  },
+  "required": [
+    "id",
+    "role",
+    "lang",
+    "domain",
+    "difficulty",
+    "input",
+    "output",
+    "metadata"
+  ],
+  "additionalProperties": false
+}

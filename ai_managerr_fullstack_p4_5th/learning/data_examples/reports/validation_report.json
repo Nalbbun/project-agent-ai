@@ -1,0 +1,162 @@
+{
+  "all_valid": true,
+  "roles": {
+    "pm": {
+      "all_valid": true,
+      "files": [
+        {
+          "file": "pm/pm.train.sample.jsonl",
+          "passed": 180,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        },
+        {
+          "file": "pm/pm.valid.sample.jsonl",
+          "passed": 45,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        }
+      ]
+    },
+    "architect": {
+      "all_valid": true,
+      "files": [
+        {
+          "file": "architect/architect.train.sample.jsonl",
+          "passed": 320,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        },
+        {
+          "file": "architect/architect.valid.sample.jsonl",
+          "passed": 80,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        }
+      ]
+    },
+    "dev-fe": {
+      "all_valid": true,
+      "files": [
+        {
+          "file": "dev-fe/dev-fe.train.sample.jsonl",
+          "passed": 180,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        },
+        {
+          "file": "dev-fe/dev-fe.valid.sample.jsonl",
+          "passed": 45,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        }
+      ]
+    },
+    "dev-be": {
+      "all_valid": true,
+      "files": [
+        {
+          "file": "dev-be/dev-be.train.sample.jsonl",
+          "passed": 180,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        },
+        {
+          "file": "dev-be/dev-be.valid.sample.jsonl",
+          "passed": 45,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        }
+      ]
+    },
+    "dev-db": {
+      "all_valid": true,
+      "files": [
+        {
+          "file": "dev-db/dev-db.train.sample.jsonl",
+          "passed": 180,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        },
+        {
+          "file": "dev-db/dev-db.valid.sample.jsonl",
+          "passed": 45,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        }
+      ]
+    },
+    "qa": {
+      "all_valid": true,
+      "files": [
+        {
+          "file": "qa/qa.train.sample.jsonl",
+          "passed": 180,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        },
+        {
+          "file": "qa/qa.valid.sample.jsonl",
+          "passed": 45,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        }
+      ]
+    },
+    "secops": {
+      "all_valid": true,
+      "files": [
+        {
+          "file": "secops/secops.train.sample.jsonl",
+          "passed": 180,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        },
+        {
+          "file": "secops/secops.valid.sample.jsonl",
+          "passed": 45,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        }
+      ]
+    },
+    "manager": {
+      "all_valid": true,
+      "files": [
+        {
+          "file": "manager/manager.train.sample.jsonl",
+          "passed": 180,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        },
+        {
+          "file": "manager/manager.valid.sample.jsonl",
+          "passed": 45,
+          "failed": 0,
+          "valid": true,
+          "errors": []
+        }
+      ]
+    }
+  },
+  "totals": {
+    "files": 16,
+    "rows_passed": 1975,
+    "rows_failed": 0
+  }
+}

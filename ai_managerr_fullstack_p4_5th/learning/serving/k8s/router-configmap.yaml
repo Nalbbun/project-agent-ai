@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agent-router-config
+data:
+  routing.yaml: |
+    routes:
+      pm:
+        endpoint: http://vllm-exaone:8002/v1
+        model: exaone-workflow
+        adapter: pm-lora
+      architect:
+        endpoint: http://vllm-general:8000/v1
+        model: qwen-general
+        adapter: architect-lora
+      dev-fe:
+        endpoint: http://vllm-coder:8001/v1
+        model: qwen-coder
+        adapter: dev-fe-lora
+      dev-be:
+        endpoint: http://vllm-coder:8001/v1
+        model: qwen-coder
+        adapter: dev-be-lora
+      dev-db:
+        endpoint: http://vllm-coder:8001/v1
+        model: qwen-coder
+        adapter: dev-db-lora
+      qa:
+        endpoint: http://vllm-general:8000/v1
+        model: qwen-general
+        adapter: qa-lora
+      secops:
+        endpoint: http://vllm-general:8000/v1
+        model: qwen-general
+        adapter: secops-lora
+      manager:
+        endpoint: http://vllm-exaone:8002/v1
+        model: exaone-workflow
+        adapter: manager-lora

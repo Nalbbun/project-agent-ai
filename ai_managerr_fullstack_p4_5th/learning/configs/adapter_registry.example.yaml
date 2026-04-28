@@ -1,0 +1,25 @@
+adapters:
+  pm-lora:
+    base_model: LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct
+    path: /models/adapters/pm-lora
+  architect-lora:
+    base_model: Qwen/Qwen2.5-3B-Instruct
+    path: /models/adapters/architect-lora
+  dev-fe-lora:
+    base_model: Qwen/Qwen2.5-Coder-1.5B-Instruct
+    path: /models/adapters/dev-fe-lora
+  dev-be-lora:
+    base_model: Qwen/Qwen2.5-Coder-1.5B-Instruct
+    path: /models/adapters/dev-be-lora
+  dev-db-lora:
+    base_model: Qwen/Qwen2.5-Coder-1.5B-Instruct
+    path: /models/adapters/dev-db-lora
+  qa-lora:
+    base_model: Qwen/Qwen2.5-3B-Instruct
+    path: /models/adapters/qa-lora
+  secops-lora:
+    base_model: Qwen/Qwen2.5-3B-Instruct
+    path: /models/adapters/secops-lora
+  manager-lora:
+    base_model: LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct
+    path: /models/adapters/manager-lora

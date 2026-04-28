@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 멀티 에이전트 설계 및 운영 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+        .gradient-text { background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .chart-container { position: relative; width: 100%; max-width: 650px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .nav-item.active { background-color: #e0f2fe; color: #0369a1; border-right: 4px solid #0284c7; font-weight: 600; }
+        .role-card { transition: all 0.2s ease-in-out; }
+        .role-card:hover { transform: translateY(-2px); border-color: #0ea5e9; box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.2); }
+        .role-card.active { border-color: #0284c7; background-color: #f0f9ff; box-shadow: inset 0 0 0 1px #0284c7; }
+        .timeline-item::before { content: ''; position: absolute; left: -25px; top: 6px; width: 14px; height: 14px; border-radius: 50%; background-color: #0ea5e9; border: 3px solid #fff; box-shadow: 0 0 0 2px #0ea5e9; }
+        .timeline-border { border-left: 2px solid #bae6fd; }
+        .status-pill { display:inline-block; padding:.35rem .65rem; border-radius:9999px; font-size:.75rem; font-weight:700; }
+        .pill-sky { background:#e0f2fe; color:#0369a1; }
+        .pill-emerald { background:#dcfce7; color:#166534; }
+        .pill-amber { background:#fef3c7; color:#92400e; }
+        .pill-slate { background:#e2e8f0; color:#334155; }
+        .mini-card { border:1px solid #e2e8f0; border-radius:1rem; background:white; padding:1rem; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row h-screen overflow-hidden">
+    <aside class="w-full md:w-72 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 z-20 shadow-sm md:h-screen">
+        <div class="p-6 border-b border-slate-100">
+            <h1 class="text-2xl font-bold text-slate-800 leading-tight">AI Multi-Agent<br><span class="text-sky-600">Architecture</span></h1>
+            <p class="text-xs text-slate-500 mt-2">업로드 HTML 기반 보완 · 운영형 최종 반영본</p>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-4 hidden md:block" id="desktopNav">
+            <a href="#section-intro" class="nav-item block px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors" data-target="section-intro">🚀 핵심 전략 요약</a>
+            <a href="#section-workflow" class="nav-item block px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors" data-target="section-workflow">🔄 에이전트 워크플로우</a>
+            <a href="#section-models" class="nav-item block px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors" data-target="section-models">🧠 SLM 모델 전략</a>
+            <a href="#section-training" class="nav-item block px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors" data-target="section-training">📈 SFT → GRPO 학습</a>
+            <a href="#section-rewards" class="nav-item block px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors" data-target="section-rewards">🎯 보상 설계</a>
+            <a href="#section-deployment" class="nav-item block px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors" data-target="section-deployment">⚙️ 배포 아키텍처</a>
+            <a href="#section-runtime" class="nav-item block px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors" data-target="section-runtime">🏗️ 현재 구현 상태</a>
+            <a href="#section-ops" class="nav-item block px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors" data-target="section-ops">🛠️ 운영 기능</a>
+            <a href="#section-docs" class="nav-item block px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors" data-target="section-docs">📚 문서 패키지</a>
+        </nav>
+        <div class="md:hidden flex overflow-x-auto border-b border-slate-200 bg-white" id="mobileNav">
+            <a href="#section-intro" class="px-4 py-3 text-sm font-medium text-slate-600 whitespace-nowrap text-sky-600 border-b-2 border-sky-600" data-target="section-intro">요약</a>
+            <a href="#section-workflow" class="px-4 py-3 text-sm font-medium text-slate-600 whitespace-nowrap" data-target="section-workflow">워크플로우</a>
+            <a href="#section-models" class="px-4 py-3 text-sm font-medium text-slate-600 whitespace-nowrap" data-target="section-models">모델</a>
+            <a href="#section-training" class="px-4 py-3 text-sm font-medium text-slate-600 whitespace-nowrap" data-target="section-training">학습</a>
+            <a href="#section-rewards" class="px-4 py-3 text-sm font-medium text-slate-600 whitespace-nowrap" data-target="section-rewards">보상</a>
+            <a href="#section-deployment" class="px-4 py-3 text-sm font-medium text-slate-600 whitespace-nowrap" data-target="section-deployment">배포</a>
+            <a href="#section-runtime" class="px-4 py-3 text-sm font-medium text-slate-600 whitespace-nowrap" data-target="section-runtime">구현</a>
+            <a href="#section-ops" class="px-4 py-3 text-sm font-medium text-slate-600 whitespace-nowrap" data-target="section-ops">운영</a>
+            <a href="#section-docs" class="px-4 py-3 text-sm font-medium text-slate-600 whitespace-nowrap" data-target="section-docs">문서</a>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 scroll-smooth" id="mainContent">
+
+        <section id="section-intro" class="mb-20 min-h-[70vh] flex flex-col justify-center">
+            <div class="glass-panel rounded-2xl p-8 md:p-12 relative overflow-hidden">
+                <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-sky-200 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-indigo-200 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+
+                <h2 class="text-sm font-bold tracking-widest text-sky-600 uppercase mb-3">Executive Summary</h2>
+                <h3 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-tight">AI 멀티 에이전트<br><span class="bg-gradient-to-r from-sky-600 to-indigo-600 gradient-text">실무 설계 및 운영 전략</span></h3>
+                <p class="text-lg text-slate-600 mb-8 max-w-4xl leading-relaxed">
+                    본 문서는 업로드한 기존 HTML 대시보드를 기본으로 유지하면서,
+                    <strong>역할별 SLM + LoRA</strong>, <strong>SFT 선행 후 GRPO</strong>, <strong>Tool Use + RAG + Orchestrator</strong> 구조를 중심으로
+                    현재까지 반영된 운영 고도화 상태를 함께 보여주는 최종 요약본입니다.
+                </p>
+
+                <div class="bg-slate-800 text-white p-6 rounded-xl border border-slate-700 shadow-lg relative mb-6">
+                    <div class="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">가장 현실적인 1줄 전략</div>
+                    <div class="text-xl md:text-2xl font-medium leading-snug flex items-center flex-wrap gap-2">
+                        <span class="bg-slate-700 px-3 py-1 rounded-md">범용 3B 1개</span>
+                        <span class="text-slate-400">+</span>
+                        <span class="bg-slate-700 px-3 py-1 rounded-md">코드 1.5B 1개</span>
+                        <span class="text-slate-400">+</span>
+                        <span class="bg-slate-700 px-3 py-1 rounded-md text-amber-400">역할별 LoRA</span>
+                        <span class="text-slate-400">+</span>
+                        <span class="bg-slate-700 px-3 py-1 rounded-md text-emerald-400">SFT 선행</span>
+                        <span class="text-slate-400">→</span>
+                        <span class="bg-slate-700 px-3 py-1 rounded-md text-sky-400">이후 GRPO</span>
+                        <span class="text-slate-400">+</span>
+                        <span class="bg-slate-700 px-3 py-1 rounded-md">Tool Use</span>
+                        <span class="text-slate-400">+</span>
+                        <span class="bg-slate-700 px-3 py-1 rounded-md">RAG</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="mini-card">
+                        <div class="text-xs text-slate-500 mb-2">현재 단계</div>
+                        <div class="font-bold text-slate-900">Phase 4 운영 고도화</div>
+                        <div class="text-sm text-slate-600 mt-2">실시간 관측, 승인, 복구, 샌드박스, CI/CD 반영</div>
+                    </div>
+                    <div class="mini-card">
+                        <div class="text-xs text-slate-500 mb-2">핵심 구조</div>
+                        <div class="font-bold text-slate-900">PM → Architect → Dev → QA → SecOps → Manager</div>
+                        <div class="text-sm text-slate-600 mt-2">역할별 분리와 재작업 루프</div>
+                    </div>
+                    <div class="mini-card">
+                        <div class="text-xs text-slate-500 mb-2">운영 핵심</div>
+                        <div class="font-bold text-slate-900">Router + RAG + Runner + Approval</div>
+                        <div class="text-sm text-slate-600 mt-2">모델보다 더 중요한 실행 계층</div>
+                    </div>
+                    <div class="mini-card">
+                        <div class="text-xs text-slate-500 mb-2">권장 배포</div>
+                        <div class="font-bold text-slate-900">PoC: Ollama / 운영: vLLM</div>
+                        <div class="text-sm text-slate-600 mt-2">멀티 LoRA와 OpenAI 호환 라우팅</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-workflow" class="mb-24 pt-10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">🔄 에이전트 협업 워크플로우</h2>
+                <p class="text-slate-600">
+                    사용자의 자연어 요구가 실제 소프트웨어로 만들어지기까지, 각 전문 에이전트가 순차적·반복적으로 협업합니다.
+                    아래 역할 카드를 클릭하면 역할별 입출력과 책임 범위를 확인할 수 있습니다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 space-y-3 relative">
+                    <div class="absolute left-6 top-6 bottom-6 w-0.5 bg-slate-200 z-0 hidden lg:block"></div>
+                    <button class="role-card w-full text-left bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 relative z-10 active" data-role="pm">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-xl text-blue-600 font-bold shrink-0">📝</div>
+                        <div><div class="font-bold text-slate-800">1. PM</div><div class="text-xs text-slate-500">요구사항 구조화 및 범위 정의</div></div>
+                    </button>
+                    <button class="role-card w-full text-left bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 relative z-10" data-role="architect">
+                        <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-xl text-indigo-600 font-bold shrink-0">🏛️</div>
+                        <div><div class="font-bold text-slate-800">2. Architect</div><div class="text-xs text-slate-500">구성, API, DB, 시퀀스 설계</div></div>
+                    </button>
+                    <button class="role-card w-full text-left bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 relative z-10" data-role="dev">
+                        <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-xl text-emerald-600 font-bold shrink-0">💻</div>
+                        <div><div class="font-bold text-slate-800">3. Dev</div><div class="text-xs text-slate-500">FE / BE / DB 코드 구현</div></div>
+                    </button>
+                    <button class="role-card w-full text-left bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 relative z-10" data-role="qa">
+                        <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-xl text-orange-600 font-bold shrink-0">🔍</div>
+                        <div><div class="font-bold text-slate-800">4. QA</div><div class="text-xs text-slate-500">테스트 케이스 및 결함 탐지</div></div>
+                    </button>
+                    <button class="role-card w-full text-left bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 relative z-10" data-role="secops">
+                        <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-xl text-red-600 font-bold shrink-0">🛡️</div>
+                        <div><div class="font-bold text-slate-800">5. SecOps</div><div class="text-xs text-slate-500">취약점 탐지 및 하드닝</div></div>
+                    </button>
+                    <button class="role-card w-full text-left bg-white p-4 rounded-xl border border-dashed border-sky-300 flex items-center gap-4 relative z-10" data-role="manager">
+                        <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-xl text-white font-bold shrink-0">⚙️</div>
+                        <div><div class="font-bold text-slate-800">Manager</div><div class="text-xs text-slate-500">오케스트레이션 및 상태 제어</div></div>
+                    </button>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="glass-panel h-full rounded-2xl p-6 md:p-8 flex flex-col">
+                        <div id="workflow-detail" class="flex-1"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-models" class="mb-24 pt-10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">🧠 권장 SLM 모델 전략</h2>
+                <p class="text-slate-600">역할별로 다른 모델 특성을 활용하는 것이 실무 운영에서 더 안정적입니다.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="w-full flex justify-center items-center">
+                    <div class="chart-container"><canvas id="modelRadarChart"></canvas></div>
+                </div>
+                <div class="space-y-6">
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <div class="flex items-center gap-3 mb-2"><span class="w-3 h-3 rounded-full bg-[#0284c7]"></span><h3 class="font-bold text-slate-800 text-lg">Qwen2.5-3B-Instruct</h3><span class="text-xs px-2 py-1 bg-slate-200 text-slate-600 rounded-md">공통 범용 베이스</span></div>
+                        <p class="text-sm text-slate-600 mb-2">구조화 출력(JSON/YAML) 및 긴 컨텍스트 안정성이 강함.</p>
+                        <p class="text-xs font-semibold text-sky-700 bg-sky-50 inline-block px-2 py-1 rounded">Architect, QA, SecOps</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <div class="flex items-center gap-3 mb-2"><span class="w-3 h-3 rounded-full bg-[#10b981]"></span><h3 class="font-bold text-slate-800 text-lg">EXAONE 3.5 2.4B Instruct</h3><span class="text-xs px-2 py-1 bg-slate-200 text-slate-600 rounded-md">한국어/영어 보조</span></div>
+                        <p class="text-sm text-slate-600 mb-2">영/한 bilingual 업무형 처리에 강하고 문서화 안정성이 좋음.</p>
+                        <p class="text-xs font-semibold text-emerald-700 bg-emerald-50 inline-block px-2 py-1 rounded">PM, Manager, 한국어 QA</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <div class="flex items-center gap-3 mb-2"><span class="w-3 h-3 rounded-full bg-[#f59e0b]"></span><h3 class="font-bold text-slate-800 text-lg">Qwen2.5-Coder-1.5B</h3><span class="text-xs px-2 py-1 bg-slate-200 text-slate-600 rounded-md">코드 전용 베이스</span></div>
+                        <p class="text-sm text-slate-600 mb-2">코드 생성, 수정, 리팩토링 특화. FE / BE / DB LoRA 분리에 적합.</p>
+                        <p class="text-xs font-semibold text-amber-700 bg-amber-50 inline-block px-2 py-1 rounded">Dev-FE / Dev-BE / Dev-DB</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-training" class="mb-24 pt-10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">📈 SFT → GRPO 학습 파이프라인</h2>
+                <p class="text-slate-600">역할 준수와 포맷 안정화를 먼저 확보하고, 이후 자동 평가 가능한 역할부터 GRPO를 적용합니다.</p>
+            </div>
+            <div class="glass-panel p-6 md:p-10 rounded-2xl">
+                <div class="relative timeline-border pl-8 py-2 space-y-12 ml-4">
+                    <div class="relative timeline-item"><div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm"><div class="text-sm font-bold text-sky-600 mb-1">Phase 1</div><h3 class="text-lg font-bold text-slate-800 mb-2">SFT 선행</h3><p class="text-slate-600 text-sm">PM, Architect, Dev 중심으로 역할과 형식을 먼저 고정합니다.</p></div></div>
+                    <div class="relative timeline-item"><div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm"><div class="text-sm font-bold text-indigo-600 mb-1">Phase 2</div><h3 class="text-lg font-bold text-slate-800 mb-2">Offline Eval</h3><p class="text-slate-600 text-sm">schema pass, task pass, role-specific metrics를 측정합니다.</p></div></div>
+                    <div class="relative timeline-item"><div class="bg-amber-50 p-5 rounded-xl border border-amber-200 shadow-sm"><div class="text-sm font-bold text-amber-600 mb-1">Phase 3</div><h3 class="text-lg font-bold text-slate-800 mb-2">GRPO</h3><p class="text-slate-600 text-sm">Dev와 QA처럼 자동 평가가 쉬운 역할부터 보상 기반 최적화를 적용합니다.</p></div></div>
+                    <div class="relative timeline-item"><div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-sm text-white"><div class="text-sm font-bold text-sky-400 mb-1">Phase 4</div><h3 class="text-lg font-bold text-white mb-2">Orchestration & Production</h3><p class="text-slate-300 text-sm">Router, RAG, Runner, Approval, Observability를 포함한 운영형 배포 단계입니다.</p></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-rewards" class="mb-24 pt-10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">🎯 역할별 보상 설계</h2>
+                <p class="text-slate-600">역할마다 성공 조건이 다르므로 reward도 분리 설계해야 RL 품질이 올라갑니다.</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col md:flex-row">
+                <div class="w-full md:w-1/3 bg-slate-50 p-6 border-r border-slate-200">
+                    <h3 class="font-bold text-slate-800 mb-4">역할별 보상 체계 보기</h3>
+                    <div class="flex flex-col gap-2" id="rewardSelectors">
+                        <button class="reward-btn w-full text-left px-4 py-3 rounded-lg bg-white border border-slate-300 shadow-sm font-medium text-slate-700 ring-2 ring-sky-500 border-sky-500" data-reward="dev">💻 Dev</button>
+                        <button class="reward-btn w-full text-left px-4 py-3 rounded-lg bg-white border border-slate-300 shadow-sm font-medium text-slate-700" data-reward="pm">📝 PM</button>
+                        <button class="reward-btn w-full text-left px-4 py-3 rounded-lg bg-white border border-slate-300 shadow-sm font-medium text-slate-700" data-reward="qa">🔍 QA</button>
+                        <button class="reward-btn w-full text-left px-4 py-3 rounded-lg bg-white border border-slate-300 shadow-sm font-medium text-slate-700" data-reward="arch">🏛️ Architect</button>
+                    </div>
+                    <div class="mt-6 p-4 bg-sky-50 rounded-lg"><p class="text-xs text-slate-600" id="insightText"><span class='font-bold text-sky-700'>인사이트:</span> Dev는 build/test/lint/type처럼 실행 검증 가능한 지표 중심으로 reward를 설계합니다.</p></div>
+                </div>
+                <div class="w-full md:w-2/3 p-6 md:p-8 flex flex-col items-center justify-center">
+                    <h4 class="text-lg font-bold text-slate-800 mb-6 text-center" id="rewardChartTitle">Dev 에이전트 보상 가중치 (R_dev)</h4>
+                    <div class="chart-container"><canvas id="rewardDoughnutChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-deployment" class="mb-24 pt-10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">⚙️ 배포 아키텍처</h2>
+                <p class="text-slate-600">PoC는 Ollama, 운영은 vLLM multi-LoRA + Router + Tool Layer 구성이 가장 현실적입니다.</p>
+            </div>
+            <div class="flex justify-center mb-8">
+                <div class="bg-slate-200 p-1 rounded-lg inline-flex">
+                    <button id="togglePoc" class="px-6 py-2 rounded-md font-medium text-sm transition-all bg-white shadow-sm text-slate-800">PoC / 로컬</button>
+                    <button id="toggleProd" class="px-6 py-2 rounded-md font-medium text-sm transition-all text-slate-500 hover:text-slate-800">운영 / 프로덕션</button>
+                </div>
+            </div>
+            <div class="glass-panel p-8 rounded-2xl border border-slate-200 relative min-h-[360px]">
+                <div id="archPoc" class="flex flex-col items-center">
+                    <div class="w-full max-w-3xl border-2 border-dashed border-slate-300 rounded-xl p-6 bg-slate-50 text-center">
+                        <h3 class="text-lg font-bold text-slate-800 mb-2">Ollama 기반 단일 노드 운영</h3>
+                        <p class="text-sm text-slate-600 mb-4">역할별 모델을 개별 등록해 빠르게 실험하는 초기 검증 구조</p>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div class="p-3 bg-white border rounded-lg">Ollama: PM / Manager</div>
+                            <div class="p-3 bg-white border rounded-lg">Ollama: Architect / QA</div>
+                            <div class="p-3 bg-white border rounded-lg">Ollama: Dev 계열</div>
+                            <div class="p-3 bg-white border rounded-lg">외부 Tool 서비스</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="archProd" class="hidden flex-col items-center">
+                    <div class="w-full max-w-4xl border border-indigo-200 rounded-xl p-6 bg-white shadow-md text-center">
+                        <h3 class="text-lg font-bold text-indigo-900 mb-2">vLLM 중심 Multi-LoRA Serving</h3>
+                        <p class="text-sm text-slate-600 mb-6">고처리량, 동적 LoRA 라우팅, Router 및 Tool Layer 결합을 전제로 한 운영 권장안</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div class="font-bold text-slate-900 mb-2">Control Plane</div>
+                                <div class="text-sm text-slate-600">Manager / Orchestrator / State / Replay / Approval</div>
+                            </div>
+                            <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200">
+                                <div class="font-bold text-indigo-900 mb-2">Inference Plane</div>
+                                <div class="text-sm text-indigo-700">Router + vLLM General / Coder / Bilingual + LoRA</div>
+                            </div>
+                            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                                <div class="font-bold text-emerald-900 mb-2">Tool & Data Plane</div>
+                                <div class="text-sm text-emerald-700">Sandbox / Test / Scan / Qdrant / Artifact / Alerts</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-runtime" class="mb-24 pt-10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">🏗️ 현재 구현 상태</h2>
+                <p class="text-slate-600">초기 개념 설계를 넘어서 실제 운영 기능이 결합된 단계까지 반영되어 있습니다.</p>
+            </div>
+            <div class="glass-panel rounded-2xl p-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="mini-card"><div class="text-xs text-slate-500 mb-2">Phase 1</div><div class="font-bold">기본 구조</div><div class="mt-2"><span class="status-pill pill-emerald">완료</span></div></div>
+                    <div class="mini-card"><div class="text-xs text-slate-500 mb-2">Phase 2</div><div class="font-bold">실행 안정화 / Router</div><div class="mt-2"><span class="status-pill pill-emerald">완료</span></div></div>
+                    <div class="mini-card"><div class="text-xs text-slate-500 mb-2">Phase 3</div><div class="font-bold">Vector RAG + Runner</div><div class="mt-2"><span class="status-pill pill-emerald">완료 수준</span></div></div>
+                    <div class="mini-card"><div class="text-xs text-slate-500 mb-2">Phase 4</div><div class="font-bold">운영 고도화</div><div class="mt-2"><span class="status-pill pill-amber">진행본</span></div></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="mini-card">
+                        <h3 class="font-bold text-slate-900 mb-3">반영된 런타임 기능</h3>
+                        <ul class="text-sm text-slate-600 space-y-2 list-disc pl-5">
+                            <li>Project / Run / Step / Event / Artifact 관리</li>
+                            <li>Router 기반 역할 라우팅</li>
+                            <li>Qdrant 기반 Vector RAG</li>
+                            <li>Build / Test / Lint / Type / SAST Runner</li>
+                            <li>Replay / dead-letter / stale reclaim</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3 class="font-bold text-slate-900 mb-3">반영된 운영 기능</h3>
+                        <ul class="text-sm text-slate-600 space-y-2 list-disc pl-5">
+                            <li>Auth / RBAC / Project Membership</li>
+                            <li>Approval inbox / multi-stage approval</li>
+                            <li>Approval SLA / alerts</li>
+                            <li>Dashboard / Workers live stream</li>
+                            <li>Replay audit / history / diff</li>
+                            <li>Sandbox image split 및 CI/CD</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-ops" class="mb-24 pt-10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">🛠️ 운영 기능</h2>
+                <p class="text-slate-600">운영형 시스템으로서 승인, 복구, 관측, 보안, 문서 관리를 포함한 기능 구성을 제공합니다.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div class="mini-card"><div class="text-sm text-slate-500 mb-2">승인</div><div class="font-bold text-slate-900 mb-2">Approval Inbox</div><div class="text-sm text-slate-600">실시간 스트리밍, 다단계 승인, SLA 경고</div></div>
+                <div class="mini-card"><div class="text-sm text-slate-500 mb-2">복구</div><div class="font-bold text-slate-900 mb-2">Replay / Dead-letter</div><div class="text-sm text-slate-600">requeue, from-phase, full-reset, diff 확인</div></div>
+                <div class="mini-card"><div class="text-sm text-slate-500 mb-2">관측</div><div class="font-bold text-slate-900 mb-2">Dashboard / Workers</div><div class="text-sm text-slate-600">run 상태, worker heartbeat, alerts 실시간 표시</div></div>
+                <div class="mini-card"><div class="text-sm text-slate-500 mb-2">지식</div><div class="font-bold text-slate-900 mb-2">Project Knowledge</div><div class="text-sm text-slate-600">지식 문서 등록, 재색인, RAG 검색 연계</div></div>
+                <div class="mini-card"><div class="text-sm text-slate-500 mb-2">권한</div><div class="font-bold text-slate-900 mb-2">RBAC / Membership</div><div class="text-sm text-slate-600">admin, owner, editor, reviewer, viewer</div></div>
+                <div class="mini-card"><div class="text-sm text-slate-500 mb-2">실행</div><div class="font-bold text-slate-900 mb-2">Sandbox Runner</div><div class="text-sm text-slate-600">local / docker, stack별 이미지, 보안 옵션 강화</div></div>
+                <div class="mini-card"><div class="text-sm text-slate-500 mb-2">문서화</div><div class="font-bold text-slate-900 mb-2">Artifact / Report</div><div class="text-sm text-slate-600">tool-report, rag-context, replay-diff 저장</div></div>
+                <div class="mini-card"><div class="text-sm text-slate-500 mb-2">배포</div><div class="font-bold text-slate-900 mb-2">CI/CD</div><div class="text-sm text-slate-600">sandbox image build / push 자동화</div></div>
+            </div>
+        </section> 
+    </main>
+
+    <script>
+        const sections = document.querySelectorAll('section');
+        const desktopNavItems = document.querySelectorAll('#desktopNav .nav-item');
+        const mobileNavItems = document.querySelectorAll('#mobileNav a');
+        const mainContent = document.getElementById('mainContent');
+
+        function updateNav() {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (mainContent.scrollTop >= sectionTop - 100) current = section.getAttribute('id');
+            });
+            desktopNavItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-target') === current) item.classList.add('active');
+            });
+            mobileNavItems.forEach(item => {
+                item.classList.remove('text-sky-600', 'border-sky-600', 'border-b-2');
+                if (item.getAttribute('data-target') === current) item.classList.add('text-sky-600', 'border-sky-600', 'border-b-2');
+            });
+        }
+        mainContent.addEventListener('scroll', updateNav);
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('data-target');
+                const targetSection = document.getElementById(targetId);
+                mainContent.scrollTo({ top: targetSection.offsetTop, behavior: 'smooth' });
+            });
+        });
+
+        const workflowData = {
+            pm: {
+                title: "PM 에이전트",
+                base: "EXAONE 3.5 2.4B 또는 Qwen2.5-3B",
+                lora: "pm-lora",
+                input: "사용자의 자연어 요구사항",
+                output: "기능/비기능 요구사항, 질문 리스트, 수용 기준",
+                desc: "추상적인 요구를 시스템이 실행 가능한 요구 명세로 변환합니다."
+            },
+            architect: {
+                title: "Architect 에이전트",
+                base: "Qwen2.5-3B-Instruct",
+                lora: "architect-lora",
+                input: "PM 결과물",
+                output: "모듈 구성, API, DB 설계, 시퀀스, ADR",
+                desc: "요구사항을 바탕으로 기술적 아키텍처 청사진을 작성합니다."
+            },
+            dev: {
+                title: "Dev 에이전트 (FE / BE / DB)",
+                base: "Qwen2.5-Coder-1.5B-Instruct",
+                lora: "dev-fe-lora / dev-be-lora / dev-db-lora",
+                input: "Architect 설계 산출물",
+                output: "코드, 테스트, 마이그레이션, 설정 파일",
+                desc: "프론트, 백엔드, DB를 역할별 LoRA로 분리해 구현합니다."
+            },
+            qa: {
+                title: "QA 에이전트",
+                base: "Qwen2.5-3B-Instruct",
+                lora: "qa-lora",
+                input: "요구사항, 설계, 코드 요약",
+                output: "테스트 케이스, 경계값 시나리오, 회귀 체크리스트",
+                desc: "구현 결과가 요구사항을 만족하는지 검증합니다."
+            },
+            secops: {
+                title: "SecOps 에이전트",
+                base: "Qwen2.5-3B-Instruct",
+                lora: "secops-lora",
+                input: "코드, Dockerfile, YAML, CI 설정",
+                output: "취약점, 보안 위험, 하드닝 권고",
+                desc: "코드와 인프라 설정의 보안 위험을 탐지하고 조치 우선순위를 제안합니다."
+            },
+            manager: {
+                title: "Manager / Orchestrator",
+                base: "EXAONE 3.5 2.4B 또는 Qwen2.5-3B",
+                lora: "manager-lora",
+                input: "사용자 요구와 현재 상태",
+                output: "실행 계획, 호출 순서, 재질문, 결과 병합",
+                desc: "전체 체인의 순서를 제어하고, 실패 시 재시도 또는 재질문을 결정합니다."
+            }
+        };
+
+        const workflowCards = document.querySelectorAll('.role-card');
+        const workflowDetail = document.getElementById('workflow-detail');
+        function renderWorkflowDetail(role) {
+            const data = workflowData[role];
+            workflowDetail.innerHTML = `
+                <div class="flex items-center gap-3 mb-6"><h3 class="text-2xl font-bold text-slate-800">${data.title}</h3></div>
+                <p class="text-slate-600 mb-6 leading-relaxed">${data.desc}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white border border-slate-200 p-4 rounded-xl">
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Base Model</div>
+                        <div class="font-medium text-slate-700">${data.base}</div>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-4 rounded-xl">
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">LoRA Adapter</div>
+                        <div class="font-mono text-sm font-medium text-indigo-600 bg-indigo-50 inline-block px-2 py-0.5 rounded">${data.lora}</div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="border-l-4 border-slate-300 pl-4 py-1">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Input</div>
+                        <div class="text-slate-700 text-sm">${data.input}</div>
+                    </div>
+                    <div class="border-l-4 border-sky-400 pl-4 py-1">
+                        <div class="text-xs font-bold text-sky-600 uppercase tracking-wider mb-1">Output</div>
+                        <div class="text-slate-700 text-sm font-medium">${data.output}</div>
+                    </div>
+                </div>`;
+        }
+        workflowCards.forEach(card => {
+            card.addEventListener('click', () => {
+                workflowCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                renderWorkflowDetail(card.getAttribute('data-role'));
+            });
+        });
+        renderWorkflowDetail('pm');
+
+        const ctxRadar = document.getElementById('modelRadarChart').getContext('2d');
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['구조화 출력', '이중언어', '코딩 능력', '긴 컨텍스트', '설계 추론'],
+                datasets: [
+                    { label: 'Qwen2.5-3B', data: [90,70,60,95,85], backgroundColor: 'rgba(2,132,199,0.2)', borderColor: 'rgba(2,132,199,1)', pointBackgroundColor: 'rgba(2,132,199,1)', borderWidth: 2 },
+                    { label: 'EXAONE 3.5 2.4B', data: [80,95,50,85,75], backgroundColor: 'rgba(16,185,129,0.2)', borderColor: 'rgba(16,185,129,1)', pointBackgroundColor: 'rgba(16,185,129,1)', borderWidth: 2 },
+                    { label: 'Qwen Coder 1.5B', data: [75,60,95,80,70], backgroundColor: 'rgba(245,158,11,0.2)', borderColor: 'rgba(245,158,11,1)', pointBackgroundColor: 'rgba(245,158,11,1)', borderWidth: 2 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: { r: { angleLines: { color: 'rgba(0,0,0,0.1)' }, grid: { color: 'rgba(0,0,0,0.1)' }, pointLabels: { font: { size: 12, weight: '600' }, color: '#475569' }, ticks: { display: false, min: 40, max: 100 } } },
+                plugins: { legend: { position: 'bottom', labels: { usePointStyle: true } } }
+            }
+        });
+
+        const rewardDatasets = {
+            dev: { labels: ['빌드 성공','단위 테스트','Lint','타입 검사','패치 최소성'], data:[35,25,15,20,5], title:'Dev 에이전트 보상 가중치 (R_dev)', insight:"<span class='font-bold text-sky-700'>인사이트:</span> Dev는 build/test/lint/type처럼 실행 검증 가능한 지표가 핵심입니다." },
+            pm: { labels: ['요구사항 커버율','기능/비기능 분리','질문 품질','AC 품질','범위 경계'], data:[30,20,20,20,10], title:'PM 에이전트 보상 가중치 (R_pm)', insight:"<span class='font-bold text-sky-700'>인사이트:</span> PM은 요구사항 커버율과 질문 품질이 가장 중요합니다." },
+            qa: { labels: ['결함 탐지율','추적성','경계값 다양성','회귀 적합성','재현성'], data:[35,20,20,15,10], title:'QA 에이전트 보상 가중치 (R_qa)', insight:"<span class='font-bold text-sky-700'>인사이트:</span> QA는 결함 탐지율과 경계값 다양성이 핵심입니다." },
+            arch: { labels: ['컴포넌트 커버리지','API-DB 정합성','시퀀스 유효성','설계 일관성','ADR 품질'], data:[25,25,20,15,15], title:'Architect 에이전트 보상 가중치 (R_arch)', insight:"<span class='font-bold text-sky-700'>인사이트:</span> Architect는 API-DB 정합성과 설계 일관성이 핵심입니다." }
+        };
+        const bgColors = ['#0284c7','#10b981','#f59e0b','#8b5cf6','#ef4444'];
+        let rewardChart;
+        function initDoughnutChart(roleKey) {
+            const dataObj = rewardDatasets[roleKey];
+            document.getElementById('rewardChartTitle').textContent = dataObj.title;
+            document.getElementById('insightText').innerHTML = dataObj.insight;
+            if (rewardChart) rewardChart.destroy();
+            rewardChart = new Chart(document.getElementById('rewardDoughnutChart').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: dataObj.labels, datasets: [{ data: dataObj.data, backgroundColor: bgColors, borderWidth: 2, borderColor: '#ffffff' }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 20 } } } }
+            });
+        }
+        initDoughnutChart('dev');
+        document.querySelectorAll('.reward-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.reward-btn').forEach(b => b.classList.remove('ring-2','ring-sky-500','border-sky-500'));
+                btn.classList.add('ring-2','ring-sky-500','border-sky-500');
+                initDoughnutChart(btn.getAttribute('data-reward'));
+            });
+        });
+
+        const togglePocBtn = document.getElementById('togglePoc');
+        const toggleProdBtn = document.getElementById('toggleProd');
+        const archPoc = document.getElementById('archPoc');
+        const archProd = document.getElementById('archProd');
+        togglePocBtn.addEventListener('click', () => {
+            togglePocBtn.classList.add('bg-white','shadow-sm','text-slate-800');
+            toggleProdBtn.classList.remove('bg-white','shadow-sm','text-slate-800');
+            toggleProdBtn.classList.add('text-slate-500');
+            archProd.classList.add('hidden'); archProd.classList.remove('flex');
+            archPoc.classList.remove('hidden'); archPoc.classList.add('flex');
+        });
+        toggleProdBtn.addEventListener('click', () => {
+            toggleProdBtn.classList.add('bg-white','shadow-sm','text-slate-800');
+            togglePocBtn.classList.remove('bg-white','shadow-sm','text-slate-800');
+            togglePocBtn.classList.add('text-slate-500');
+            archPoc.classList.add('hidden'); archPoc.classList.remove('flex');
+            archProd.classList.remove('hidden'); archProd.classList.add('flex');
+        });
+
+        updateNav();
+    </script>
+</body>
+</html>

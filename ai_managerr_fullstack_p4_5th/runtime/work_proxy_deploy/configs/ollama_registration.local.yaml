@@ -1,0 +1,118 @@
+version: 1
+
+ollama:
+  host: http://127.0.0.1:11434
+  create_timeout_seconds: 1800
+  tags:
+    environment: local
+    managed_by: ai-agent-work
+
+paths:
+  gguf_root: /srv/llm/merged/ollama
+  modelfile_root: /srv/llm/merged/ollama/modelfiles
+
+models:
+  architect:
+    name: architect-agent
+    gguf_file: architect-agent.gguf
+    fallback_gguf_file: architect-agent-f16.gguf
+    parameters:
+      num_ctx: 8192
+      temperature: 0.10
+      top_p: 0.90
+      repeat_penalty: 1.02
+    system: |
+      You are the Architect agent.
+      Produce architecture outputs in structured JSON or YAML when requested.
+      Optimize for system decomposition, API/DB consistency, and implementation feasibility.
+
+  dev-fe:
+    name: dev-fe-agent
+    gguf_file: dev-fe-agent.gguf
+    fallback_gguf_file: dev-fe-agent-f16.gguf
+    parameters:
+      num_ctx: 8192
+      temperature: 0.05
+      top_p: 0.90
+      repeat_penalty: 1.02
+    system: |
+      You are the Dev-FE agent.
+      Generate production-oriented frontend code with tests and minimal changes.
+
+  dev-be:
+    name: dev-be-agent
+    gguf_file: dev-be-agent.gguf
+    fallback_gguf_file: dev-be-agent-f16.gguf
+    parameters:
+      num_ctx: 8192
+      temperature: 0.05
+      top_p: 0.90
+      repeat_penalty: 1.02
+    system: |
+      You are the Dev-BE agent.
+      Generate production-oriented backend code, API handlers, tests, and config with minimal changes.
+
+  dev-db:
+    name: dev-db-agent
+    gguf_file: dev-db-agent.gguf
+    fallback_gguf_file: dev-db-agent-f16.gguf
+    parameters:
+      num_ctx: 8192
+      temperature: 0.05
+      top_p: 0.90
+      repeat_penalty: 1.02
+    system: |
+      You are the Dev-DB agent.
+      Generate PostgreSQL DDL, indexes, and migrations with strong integrity and auditability.
+
+  qa:
+    name: qa-agent
+    gguf_file: qa-agent.gguf
+    fallback_gguf_file: qa-agent-f16.gguf
+    parameters:
+      num_ctx: 8192
+      temperature: 0.10
+      top_p: 0.90
+      repeat_penalty: 1.02
+    system: |
+      You are the QA agent.
+      Generate test cases, boundary cases, regression coverage, and defect reports.
+
+  secops:
+    name: secops-agent
+    gguf_file: secops-agent.gguf
+    fallback_gguf_file: secops-agent-f16.gguf
+    parameters:
+      num_ctx: 8192
+      temperature: 0.05
+      top_p: 0.90
+      repeat_penalty: 1.02
+    system: |
+      You are the SecOps agent.
+      Detect vulnerabilities, misconfigurations, and propose practical remediation steps.
+
+  pm:
+    name: pm-agent
+    gguf_file: pm-agent.gguf
+    fallback_gguf_file: pm-agent-f16.gguf
+    parameters:
+      num_ctx: 8192
+      temperature: 0.20
+      top_p: 0.90
+      repeat_penalty: 1.02
+    system: |
+      You are the PM agent.
+      Structure requirements, clarify missing information, separate functional and non-functional requirements.
+
+  manager:
+    name: manager-agent
+    gguf_file: manager-agent.gguf
+    fallback_gguf_file: manager-agent-f16.gguf
+    parameters:
+      num_ctx: 8192
+      temperature: 0.20
+      top_p: 0.90
+      repeat_penalty: 1.02
+    system: |
+      You are the Manager agent.
+      Plan task order, detect missing information, route work to downstream agents, and merge results.

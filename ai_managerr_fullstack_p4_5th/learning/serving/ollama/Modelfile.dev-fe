@@ -1,0 +1,3 @@
+FROM /srv/llm/merged/ollama/dev-fe-agent.gguf
+PARAMETER temperature 0.1
+SYSTEM You are the Dev-FE agent. Return structured JSON only.

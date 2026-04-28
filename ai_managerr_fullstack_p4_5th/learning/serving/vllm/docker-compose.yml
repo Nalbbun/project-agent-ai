@@ -1,0 +1,108 @@
+version: "3.9"
+services:
+  vllm-general:
+    image: vllm/vllm-openai:latest
+    container_name: vllm-general
+    restart: unless-stopped
+    gpus: all
+    ipc: host
+    shm_size: "8gb"
+    command:
+      - --model
+      - /models/base/qwen/Qwen2.5-3B-Instruct
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --served-model-name
+      - qwen-general
+      - --enable-lora
+      - --max-lora-rank
+      - "32"
+      - --max-loras
+      - "8"
+      - --gpu-memory-utilization
+      - "0.90"
+      - --lora-modules
+      - '{"name":"architect-lora","path":"/models/adapters/architect-lora","base_model_name":"/models/base/qwen/Qwen2.5-3B-Instruct"}'
+      - '{"name":"qa-lora","path":"/models/adapters/qa-lora","base_model_name":"/models/base/qwen/Qwen2.5-3B-Instruct"}'
+      - '{"name":"secops-lora","path":"/models/adapters/secops-lora","base_model_name":"/models/base/qwen/Qwen2.5-3B-Instruct"}'
+    ports:
+      - "8000:8000"
+    volumes:
+      - ${HOST_BASE_MODEL_ROOT:-/srv/llm/base}:/models/base:ro
+      - ${HOST_LORA_ROOT:-/srv/llm/adapters}:/models/adapters:ro
+      - ${HOST_HF_CACHE_ROOT:-/srv/llm/cache/huggingface}:/root/.cache/huggingface
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN:-}
+
+  vllm-coder:
+    image: vllm/vllm-openai:latest
+    container_name: vllm-coder
+    restart: unless-stopped
+    gpus: all
+    ipc: host
+    shm_size: "8gb"
+    command:
+      - --model
+      - /models/base/qwen/Qwen2.5-Coder-1.5B-Instruct
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8001"
+      - --served-model-name
+      - qwen-coder
+      - --enable-lora
+      - --max-lora-rank
+      - "32"
+      - --max-loras
+      - "8"
+      - --gpu-memory-utilization
+      - "0.90"
+      - --lora-modules
+      - '{"name":"dev-fe-lora","path":"/models/adapters/dev-fe-lora","base_model_name":"/models/base/qwen/Qwen2.5-Coder-1.5B-Instruct"}'
+      - '{"name":"dev-be-lora","path":"/models/adapters/dev-be-lora","base_model_name":"/models/base/qwen/Qwen2.5-Coder-1.5B-Instruct"}'
+      - '{"name":"dev-db-lora","path":"/models/adapters/dev-db-lora","base_model_name":"/models/base/qwen/Qwen2.5-Coder-1.5B-Instruct"}'
+    ports:
+      - "8001:8001"
+    volumes:
+      - ${HOST_BASE_MODEL_ROOT:-/srv/llm/base}:/models/base:ro
+      - ${HOST_LORA_ROOT:-/srv/llm/adapters}:/models/adapters:ro
+      - ${HOST_HF_CACHE_ROOT:-/srv/llm/cache/huggingface}:/root/.cache/huggingface
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN:-}
+
+  vllm-exaone:
+    image: vllm/vllm-openai:latest
+    container_name: vllm-exaone
+    restart: unless-stopped
+    gpus: all
+    ipc: host
+    shm_size: "8gb"
+    command:
+      - --model
+      - /models/base/exaone/EXAONE-3.5-2.4B-Instruct
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8002"
+      - --served-model-name
+      - exaone-workflow
+      - --enable-lora
+      - --max-lora-rank
+      - "32"
+      - --max-loras
+      - "4"
+      - --gpu-memory-utilization
+      - "0.90"
+      - --lora-modules
+      - '{"name":"pm-lora","path":"/models/adapters/pm-lora","base_model_name":"/models/base/exaone/EXAONE-3.5-2.4B-Instruct"}'
+      - '{"name":"manager-lora","path":"/models/adapters/manager-lora","base_model_name":"/models/base/exaone/EXAONE-3.5-2.4B-Instruct"}'
+    ports:
+      - "8002:8002"
+    volumes:
+      - ${HOST_BASE_MODEL_ROOT:-/srv/llm/base}:/models/base:ro
+      - ${HOST_LORA_ROOT:-/srv/llm/adapters}:/models/adapters:ro
+      - ${HOST_HF_CACHE_ROOT:-/srv/llm/cache/huggingface}:/root/.cache/huggingface
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN:-}

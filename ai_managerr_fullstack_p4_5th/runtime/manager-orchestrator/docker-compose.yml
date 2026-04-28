@@ -1,0 +1,102 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: agent_orchestrator
+      POSTGRES_USER: agent
+      POSTGRES_PASSWORD: agent
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agent -d agent_orchestrator"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  qdrant:
+    image: qdrant/qdrant:v1.11.5
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6333/readyz >/dev/null 2>&1 || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  router:
+    build:
+      context: ../work_proxy_deploy
+      dockerfile: router_service/Dockerfile
+    environment:
+      PYTHONPATH: /app
+      ROUTER_CONFIG_PATH: /app/configs/vllm_request_router.local.yaml
+      ROUTER_BEARER_TOKEN: ${ROUTER_BEARER_TOKEN:-}
+      VLLM_ROUTER_API_KEY: ${VLLM_ROUTER_API_KEY:-change-me}
+    ports:
+      - "8081:8080"
+    volumes:
+      - ../work_proxy_deploy/configs:/app/configs
+    healthcheck:
+      test: ["CMD-SHELL", "python - <<'PY'\nimport urllib.request,sys\ntry:\n r=urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=3)\n sys.exit(0 if r.status < 400 else 1)\nexcept Exception:\n sys.exit(1)\nPY"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  backend-api:
+    build:
+      context: ./backend
+    env_file:
+      - ./.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      router:
+        condition: service_healthy
+    volumes:
+      - ./config:/app/config
+      - ./artifacts:/app/artifacts
+
+  backend-worker:
+    build:
+      context: ./backend
+    env_file:
+      - ./.env
+    command: ["python", "-m", "app.workers.run_worker"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      router:
+        condition: service_healthy
+    volumes:
+      - ./config:/app/config
+      - ./artifacts:/app/artifacts
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      VITE_API_BASE: http://localhost:8080/api
+    ports:
+      - "5174:5173"
+    depends_on:
+      - backend-api
+
+volumes:
+  pgdata:
+  qdrant_data:

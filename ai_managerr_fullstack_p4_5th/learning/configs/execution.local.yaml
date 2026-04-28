@@ -1,0 +1,35 @@
+repo:
+  build_cmd:
+    - python
+    - -m
+    - compileall
+    - rewards
+    - train
+  test_cmd:
+    - bash
+    - -lc
+    - |
+      set -e
+      for role in architect dev-be dev-db dev-fe manager pm qa secops; do
+        python train/validate_jsonl.py --jsonl data_examples/${role}/${role}.train.sample.jsonl --schema schemas/${role}.schema.json
+        python train/validate_jsonl.py --jsonl data_examples/${role}/${role}.valid.sample.jsonl --schema schemas/${role}.schema.json
+      done
+  lint_cmd:
+    - ruff
+    - check
+    - rewards
+    - train
+
+dev_eval:
+  dev_fe:
+    build_cmd: ["bash", "-lc", "npm ci && npm run build"]
+    test_cmd: ["bash", "-lc", "npm test -- --runInBand"]
+    lint_cmd: ["bash", "-lc", "npm run lint && npx tsc --noEmit"]
+  dev_be:
+    build_cmd: ["bash", "-lc", "./gradlew assemble -x test"]
+    test_cmd: ["bash", "-lc", "./gradlew test"]
+    lint_cmd: ["bash", "-lc", "./gradlew check"]
+  dev_db:
+    build_cmd: ["bash", "-lc", "python /opt/eval/sql_syntax_smoke.py ."]
+    test_cmd: ["bash", "-lc", "python /opt/eval/apply_pg_migration_smoke.py ."]
+    lint_cmd: ["bash", "-lc", "sqlfluff lint . --dialect postgres"]

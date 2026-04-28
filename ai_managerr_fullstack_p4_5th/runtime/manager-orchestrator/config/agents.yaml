@@ -1,0 +1,98 @@
+version: 2
+agents:
+  - code: manager
+    name: Manager / Orchestrator
+    role: manager
+    transport: router
+    endpoint: http://router:8080/v1
+    model: router-auto
+    adapter: manager-lora
+    router_role: manager
+    prompt_key: manager
+    request_timeout_seconds: 180
+    max_retries: 2
+    active: true
+  - code: pm
+    name: Product Manager Agent
+    role: pm
+    transport: router
+    endpoint: http://router:8080/v1
+    model: router-auto
+    adapter: pm-lora
+    router_role: pm
+    prompt_key: pm
+    request_timeout_seconds: 180
+    max_retries: 2
+    active: true
+  - code: architect
+    name: Architect Agent
+    role: architect
+    transport: router
+    endpoint: http://router:8080/v1
+    model: router-auto
+    adapter: architect-lora
+    router_role: architect
+    prompt_key: architect
+    request_timeout_seconds: 180
+    max_retries: 2
+    active: true
+  - code: dev-fe
+    name: Frontend Developer Agent
+    role: dev-fe
+    transport: router
+    endpoint: http://router:8080/v1
+    model: router-auto
+    adapter: dev-fe-lora
+    router_role: dev-fe
+    prompt_key: dev_fe
+    request_timeout_seconds: 180
+    max_retries: 2
+    active: true
+  - code: dev-be
+    name: Backend Developer Agent
+    role: dev-be
+    transport: router
+    endpoint: http://router:8080/v1
+    model: router-auto
+    adapter: dev-be-lora
+    router_role: dev-be
+    prompt_key: dev_be
+    request_timeout_seconds: 180
+    max_retries: 2
+    active: true
+  - code: dev-db
+    name: Database Developer Agent
+    role: dev-db
+    transport: router
+    endpoint: http://router:8080/v1
+    model: router-auto
+    adapter: dev-db-lora
+    router_role: dev-db
+    prompt_key: dev_db
+    request_timeout_seconds: 180
+    max_retries: 2
+    active: true
+  - code: qa
+    name: QA Agent
+    role: qa
+    transport: router
+    endpoint: http://router:8080/v1
+    model: router-auto
+    adapter: qa-lora
+    router_role: qa
+    prompt_key: qa
+    request_timeout_seconds: 180
+    max_retries: 2
+    active: true
+  - code: secops
+    name: SecOps Agent
+    role: secops
+    transport: router
+    endpoint: http://router:8080/v1
+    model: router-auto
+    adapter: secops-lora
+    router_role: secops
+    prompt_key: secops
+    request_timeout_seconds: 180
+    max_retries: 2
+    active: true

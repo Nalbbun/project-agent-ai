@@ -1,0 +1,13 @@
+services:
+  sandbox-runner-python:
+    image: manager-orchestrator-runner-python:latest
+    build:
+      context: ./sandbox-images/python
+  sandbox-runner-node:
+    image: manager-orchestrator-runner-node:latest
+    build:
+      context: ./sandbox-images/node
+  sandbox-runner-java:
+    image: manager-orchestrator-runner-java:latest
+    build:
+      context: ./sandbox-images/java

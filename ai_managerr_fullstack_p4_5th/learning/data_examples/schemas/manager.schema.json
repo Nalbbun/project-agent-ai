@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "manager.schema.json",
+  "title": "Manager Sample Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "role",
+    "lang",
+    "domain",
+    "difficulty",
+    "input",
+    "output",
+    "metadata"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^mgr-\\d{6}$"
+    },
+    "role": {
+      "const": "manager"
+    },
+    "lang": {
+      "$ref": "common-defs.schema.json#/$defs/lang"
+    },
+    "domain": {
+      "$ref": "common-defs.schema.json#/$defs/domain"
+    },
+    "difficulty": {
+      "$ref": "common-defs.schema.json#/$defs/difficulty"
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "user_request",
+        "current_state"
+      ],
+      "properties": {
+        "user_request": {
+          "type": "string",
+          "minLength": 5
+        },
+        "current_state": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pm",
+            "architect",
+            "dev",
+            "qa",
+            "secops"
+          ],
+          "properties": {
+            "pm": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "architect": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "dev": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "qa": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "secops": {
+              "type": [
+                "object",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_plan",
+        "missing_info_questions",
+        "merge_strategy"
+      ],
+      "properties": {
+        "execution_plan": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "step",
+              "agent",
+              "task"
+            ],
+            "properties": {
+              "step": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "agent": {
+                "type": "string",
+                "enum": [
+                  "pm",
+                  "architect",
+                  "dev-fe",
+                  "dev-be",
+                  "dev-db",
+                  "qa",
+                  "secops",
+                  "manager"
+                ]
+              },
+              "task": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "missing_info_questions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "merge_strategy": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "metadata": {
+      "$ref": "common-defs.schema.json#/$defs/metadata"
+    }
+  }
+}

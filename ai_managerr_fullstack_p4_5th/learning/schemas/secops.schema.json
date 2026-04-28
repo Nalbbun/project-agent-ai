@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SecOps Agent Training Sample",
+  "type": "object",
+  "$defs": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "source",
+        "version"
+      ],
+      "additionalProperties": true
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "role": {
+      "const": "secops"
+    },
+    "lang": {
+      "enum": [
+        "ko",
+        "en",
+        "mixed"
+      ]
+    },
+    "domain": {
+      "type": "string"
+    },
+    "difficulty": {
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ]
+    },
+    "input": {
+      "type": "object",
+      "properties": {
+        "artifacts": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "artifacts"
+      ],
+      "additionalProperties": true
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "severity": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string"
+              },
+              "issue": {
+                "type": "string"
+              },
+              "recommendation": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "severity",
+              "category",
+              "issue",
+              "recommendation"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "hardening_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "priority_order": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "findings"
+      ],
+      "additionalProperties": false
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    }
+  },
+  "required": [
+    "id",
+    "role",
+    "lang",
+    "domain",
+    "difficulty",
+    "input",
+    "output",
+    "metadata"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,219 @@
+name: ai-agent-stack
+
+x-vllm-common: &vllm-common
+  image: vllm/vllm-openai:latest
+  ipc: host
+  restart: unless-stopped
+  environment:
+    HF_TOKEN: ${HF_TOKEN:-}
+    NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
+    NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES:-compute,utility}
+  volumes:
+    - ${HF_CACHE_DIR:-${HOME}/.cache/huggingface}:/root/.cache/huggingface
+    - ${MODEL_ROOT:-/srv/llm}:/srv/llm
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+  healthcheck:
+    test: ["CMD-SHELL", "python - <<'PY'\nimport urllib.request, sys\ntry:\n    r = urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)\n    sys.exit(0 if r.status < 400 else 1)\nexcept Exception:\n    sys.exit(1)\nPY"]
+    interval: 30s
+    timeout: 10s
+    retries: 10
+    start_period: 120s
+
+services:
+  vllm-general:
+    <<: *vllm-common
+    container_name: vllm-general
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --api-key
+      - ${VLLM_ROUTER_API_KEY:-change-me}
+      - --model
+      - /srv/llm/base/qwen/Qwen2.5-3B-Instruct
+      - --served-model-name
+      - qwen-general
+      - --dtype
+      - auto
+      - --max-model-len
+      - ${VLLM_GENERAL_MAX_MODEL_LEN:-8192}
+      - --gpu-memory-utilization
+      - ${VLLM_GENERAL_GPU_MEM_UTIL:-0.92}
+      - --enable-lora
+      - --max-loras
+      - ${VLLM_GENERAL_MAX_LORAS:-4}
+      - --max-lora-rank
+      - ${VLLM_GENERAL_MAX_LORA_RANK:-64}
+      - --lora-modules
+      - architect-lora=/srv/llm/adapters/architect-lora
+      - qa-lora=/srv/llm/adapters/qa-lora
+      - secops-lora=/srv/llm/adapters/secops-lora
+    ports:
+      - "${VLLM_GENERAL_HOST_PORT:-8000}:8000"
+
+  vllm-coder:
+    <<: *vllm-common
+    container_name: vllm-coder
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8001"
+      - --api-key
+      - ${VLLM_ROUTER_API_KEY:-change-me}
+      - --model
+      - /srv/llm/base/qwen/Qwen2.5-Coder-1.5B-Instruct
+      - --served-model-name
+      - qwen-coder
+      - --dtype
+      - auto
+      - --max-model-len
+      - ${VLLM_CODER_MAX_MODEL_LEN:-8192}
+      - --gpu-memory-utilization
+      - ${VLLM_CODER_GPU_MEM_UTIL:-0.90}
+      - --enable-lora
+      - --max-loras
+      - ${VLLM_CODER_MAX_LORAS:-4}
+      - --max-lora-rank
+      - ${VLLM_CODER_MAX_LORA_RANK:-64}
+      - --lora-modules
+      - dev-fe-lora=/srv/llm/adapters/dev-fe-lora
+      - dev-be-lora=/srv/llm/adapters/dev-be-lora
+      - dev-db-lora=/srv/llm/adapters/dev-db-lora
+    ports:
+      - "${VLLM_CODER_HOST_PORT:-8001}:8001"
+    healthcheck:
+      test: ["CMD-SHELL", "python - <<'PY'\nimport urllib.request, sys\ntry:\n    r = urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=3)\n    sys.exit(0 if r.status < 400 else 1)\nexcept Exception:\n    sys.exit(1)\nPY"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+  vllm-exaone:
+    <<: *vllm-common
+    container_name: vllm-exaone
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8002"
+      - --api-key
+      - ${VLLM_ROUTER_API_KEY:-change-me}
+      - --model
+      - /srv/llm/base/exaone/EXAONE-3.5-2.4B-Instruct
+      - --served-model-name
+      - exaone-workflow
+      - --dtype
+      - auto
+      - --max-model-len
+      - ${VLLM_EXAONE_MAX_MODEL_LEN:-8192}
+      - --gpu-memory-utilization
+      - ${VLLM_EXAONE_GPU_MEM_UTIL:-0.90}
+      - --enable-lora
+      - --max-loras
+      - ${VLLM_EXAONE_MAX_LORAS:-2}
+      - --max-lora-rank
+      - ${VLLM_EXAONE_MAX_LORA_RANK:-64}
+      - --trust-remote-code
+      - --lora-modules
+      - pm-lora=/srv/llm/adapters/pm-lora
+      - manager-lora=/srv/llm/adapters/manager-lora
+    ports:
+      - "${VLLM_EXAONE_HOST_PORT:-8002}:8002"
+    healthcheck:
+      test: ["CMD-SHELL", "python - <<'PY'\nimport urllib.request, sys\ntry:\n    r = urllib.request.urlopen('http://127.0.0.1:8002/health', timeout=3)\n    sys.exit(0 if r.status < 400 else 1)\nexcept Exception:\n    sys.exit(1)\nPY"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+  router:
+    build:
+      context: .
+      dockerfile: router_service/Dockerfile
+    container_name: multi-agent-router
+    restart: unless-stopped
+    depends_on:
+      vllm-general:
+        condition: service_healthy
+      vllm-coder:
+        condition: service_healthy
+      vllm-exaone:
+        condition: service_healthy
+    environment:
+      PYTHONPATH: /app
+      ROUTER_CONFIG_PATH: /app/configs/vllm_request_router.local.yaml
+      ROUTER_BEARER_TOKEN: ${ROUTER_BEARER_TOKEN:-}
+      VLLM_ROUTER_API_KEY: ${VLLM_ROUTER_API_KEY:-change-me}
+    ports:
+      - "${ROUTER_HOST_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "python - <<'PY'\nimport urllib.request, sys\ntry:\n    r = urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=3)\n    sys.exit(0 if r.status < 400 else 1)\nexcept Exception:\n    sys.exit(1)\nPY"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    profiles: ["ollama"]
+    ports:
+      - "${OLLAMA_HOST_PORT:-11434}:11434"
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
+      NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES:-compute,utility}
+    volumes:
+      - ${OLLAMA_DATA_DIR:-/srv/ollama}:/root/.ollama
+      - ${MODEL_ROOT:-/srv/llm}:/srv/llm
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  ollama-bootstrap:
+    image: ollama/ollama:latest
+    container_name: ollama-bootstrap
+    profiles: ["ollama"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    working_dir: /workspace
+    entrypoint: ["/bin/sh", "-lc"]
+    command: >-
+      chmod +x scripts/deploy_merge_convert_and_register_ollama.sh serving/ollama/register_models.sh
+      && DRY_RUN=${DRY_RUN:-0} REGISTRATION_CONFIG_PATH=/workspace/configs/ollama_registration.local.yaml
+      OLLAMA_HOST=http://ollama:11434
+      bash scripts/deploy_merge_convert_and_register_ollama.sh
+    environment:
+      BASE_MODEL_ROOT: ${BASE_MODEL_ROOT:-/srv/llm/base}
+      ADAPTER_ROOT: ${ADAPTER_ROOT:-/srv/llm/adapters}
+      MERGED_HF_ROOT: ${MERGED_HF_ROOT:-/srv/llm/merged/hf}
+      GGUF_ROOT: ${GGUF_ROOT:-/srv/llm/merged/ollama}
+      LLAMACPP_ROOT: ${LLAMACPP_ROOT:-/opt/llama.cpp}
+      ROLES: ${OLLAMA_ROLES:-architect,dev-fe,dev-be,dev-db,qa,secops}
+      OLLAMA_HOST: http://ollama:11434
+      REGISTRATION_CONFIG_PATH: /workspace/configs/ollama_registration.local.yaml
+    volumes:
+      - ./:/workspace
+      - ${MODEL_ROOT:-/srv/llm}:/srv/llm
+      - ${LLAMACPP_ROOT:-/opt/llama.cpp}:${LLAMACPP_ROOT:-/opt/llama.cpp}
+    restart: "no"

@@ -1,0 +1,10 @@
+all_valid=True
+files=16 passed=1975 failed=0
+pm: valid=True passed=225 failed=0
+architect: valid=True passed=400 failed=0
+dev-fe: valid=True passed=225 failed=0
+dev-be: valid=True passed=225 failed=0
+dev-db: valid=True passed=225 failed=0
+qa: valid=True passed=225 failed=0
+secops: valid=True passed=225 failed=0
+manager: valid=True passed=225 failed=0

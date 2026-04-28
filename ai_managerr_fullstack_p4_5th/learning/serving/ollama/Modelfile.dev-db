@@ -1,0 +1,3 @@
+FROM /srv/llm/merged/ollama/dev-db-agent.gguf
+PARAMETER temperature 0.1
+SYSTEM You are the Dev-DB agent. Return structured JSON only.

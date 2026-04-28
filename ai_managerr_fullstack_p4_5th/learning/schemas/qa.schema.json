@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QA Agent Training Sample",
+  "type": "object",
+  "$defs": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "source",
+        "version"
+      ],
+      "additionalProperties": true
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "role": {
+      "const": "qa"
+    },
+    "lang": {
+      "enum": [
+        "ko",
+        "en",
+        "mixed"
+      ]
+    },
+    "domain": {
+      "type": "string"
+    },
+    "difficulty": {
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ]
+    },
+    "input": {
+      "type": "object",
+      "properties": {
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "code_summary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "requirements"
+      ],
+      "additionalProperties": true
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "test_cases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "given": {
+                "type": "string"
+              },
+              "when": {
+                "type": "string"
+              },
+              "then": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "title",
+              "given",
+              "when",
+              "then"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "boundary_cases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "regression_checklist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "test_cases"
+      ],
+      "additionalProperties": false
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    }
+  },
+  "required": [
+    "id",
+    "role",
+    "lang",
+    "domain",
+    "difficulty",
+    "input",
+    "output",
+    "metadata"
+  ],
+  "additionalProperties": false
+}

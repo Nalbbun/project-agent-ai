@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dev-be.schema.json",
+  "title": "Dev-BE Sample Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "role",
+    "lang",
+    "domain",
+    "difficulty",
+    "input",
+    "output",
+    "metadata"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^dev-be-\\d{6}$"
+    },
+    "role": {
+      "const": "dev-be"
+    },
+    "lang": {
+      "$ref": "common-defs.schema.json#/$defs/lang"
+    },
+    "domain": {
+      "$ref": "common-defs.schema.json#/$defs/domain"
+    },
+    "difficulty": {
+      "$ref": "common-defs.schema.json#/$defs/difficulty"
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task",
+        "design_context"
+      ],
+      "properties": {
+        "task": {
+          "type": "string",
+          "minLength": 2
+        },
+        "design_context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "framework",
+            "api_contract"
+          ],
+          "properties": {
+            "framework": {
+              "type": "string",
+              "minLength": 2
+            },
+            "api_contract": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "method",
+                "path"
+              ],
+              "properties": {
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "DELETE"
+                  ]
+                },
+                "path": {
+                  "type": "string",
+                  "pattern": "^/"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "files",
+        "tests"
+      ],
+      "properties": {
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "common-defs.schema.json#/$defs/fileItem"
+          }
+        },
+        "tests": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "common-defs.schema.json#/$defs/fileItem"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "$ref": "common-defs.schema.json#/$defs/metadata"
+    }
+  }
+}

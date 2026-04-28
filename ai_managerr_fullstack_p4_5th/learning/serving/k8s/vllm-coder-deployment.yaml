@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-coder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm-coder
+  template:
+    metadata:
+      labels:
+        app: vllm-coder
+    spec:
+      containers:
+        - name: server
+          image: vllm/vllm-openai:latest
+          args:
+            - --model
+            - Qwen/Qwen2.5-Coder-1.5B-Instruct
+            - --served-model-name
+            - qwen-coder
+            - --enable-lora
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8001"
+          ports:
+            - containerPort: 8001
+          env:
+            - name: HUGGING_FACE_HUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+          volumeMounts:
+            - name: adapters
+              mountPath: /models/adapters
+      volumes:
+        - name: adapters
+          persistentVolumeClaim:
+            claimName: agent-adapters-pvc

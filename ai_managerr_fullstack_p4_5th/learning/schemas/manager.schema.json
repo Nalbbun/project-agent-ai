@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Manager Agent Training Sample",
+  "type": "object",
+  "$defs": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "source",
+        "version"
+      ],
+      "additionalProperties": true
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "role": {
+      "const": "manager"
+    },
+    "lang": {
+      "enum": [
+        "ko",
+        "en",
+        "mixed"
+      ]
+    },
+    "domain": {
+      "type": "string"
+    },
+    "difficulty": {
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ]
+    },
+    "input": {
+      "type": "object",
+      "properties": {
+        "user_request": {
+          "type": "string"
+        },
+        "current_state": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "user_request",
+        "current_state"
+      ],
+      "additionalProperties": true
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "execution_plan": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "agent": {
+                "type": "string"
+              },
+              "task": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "step",
+              "agent",
+              "task"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "missing_info_questions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "merge_strategy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "execution_plan",
+        "missing_info_questions",
+        "merge_strategy"
+      ],
+      "additionalProperties": false
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    }
+  },
+  "required": [
+    "id",
+    "role",
+    "lang",
+    "domain",
+    "difficulty",
+    "input",
+    "output",
+    "metadata"
+  ],
+  "additionalProperties": false
+}

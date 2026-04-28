@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "common-defs.schema.json",
+  "title": "AI Agent Sample Common Definitions",
+  "$defs": {
+    "lang": {
+      "type": "string",
+      "enum": [
+        "ko",
+        "en",
+        "mixed"
+      ]
+    },
+    "domain": {
+      "type": "string",
+      "enum": [
+        "webapp",
+        "backend",
+        "infra",
+        "data",
+        "mobile",
+        "game",
+        "ecommerce",
+        "saas"
+      ]
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "version",
+        "tags"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "human",
+            "synthetic",
+            "distilled",
+            "production"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^v\\d+$"
+        },
+        "tags": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "fileItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "content"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

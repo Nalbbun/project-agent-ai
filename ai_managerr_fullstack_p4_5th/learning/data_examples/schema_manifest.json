@@ -1,0 +1,52 @@
+{
+  "schema_version": "v1",
+  "json_schema_draft": "2020-12",
+  "roles": {
+    "pm": {
+      "schema_file": "schemas/pm.schema.json",
+      "train_file": "pm/pm.train.sample.jsonl",
+      "valid_file": "pm/pm.valid.sample.jsonl"
+    },
+    "architect": {
+      "schema_file": "schemas/architect.schema.json",
+      "train_file": "architect/architect.train.sample.jsonl",
+      "valid_file": "architect/architect.valid.sample.jsonl"
+    },
+    "dev-fe": {
+      "schema_file": "schemas/dev-fe.schema.json",
+      "train_file": "dev-fe/dev-fe.train.sample.jsonl",
+      "valid_file": "dev-fe/dev-fe.valid.sample.jsonl"
+    },
+    "dev-be": {
+      "schema_file": "schemas/dev-be.schema.json",
+      "train_file": "dev-be/dev-be.train.sample.jsonl",
+      "valid_file": "dev-be/dev-be.valid.sample.jsonl"
+    },
+    "dev-db": {
+      "schema_file": "schemas/dev-db.schema.json",
+      "train_file": "dev-db/dev-db.train.sample.jsonl",
+      "valid_file": "dev-db/dev-db.valid.sample.jsonl"
+    },
+    "qa": {
+      "schema_file": "schemas/qa.schema.json",
+      "train_file": "qa/qa.train.sample.jsonl",
+      "valid_file": "qa/qa.valid.sample.jsonl"
+    },
+    "secops": {
+      "schema_file": "schemas/secops.schema.json",
+      "train_file": "secops/secops.train.sample.jsonl",
+      "valid_file": "secops/secops.valid.sample.jsonl"
+    },
+    "manager": {
+      "schema_file": "schemas/manager.schema.json",
+      "train_file": "manager/manager.train.sample.jsonl",
+      "valid_file": "manager/manager.valid.sample.jsonl"
+    }
+  },
+  "common_schema_file": "schemas/common-defs.schema.json",
+  "validator_script": "scripts/validate_samples.py",
+  "report_files": [
+    "reports/validation_report.json",
+    "reports/validation_summary.txt"
+  ]
+}
