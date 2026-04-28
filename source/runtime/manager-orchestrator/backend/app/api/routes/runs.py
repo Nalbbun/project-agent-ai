@@ -95,7 +95,7 @@ def retry_run(run_id: str, session: Session = Depends(get_db_session), user: Use
         raise HTTPException(status_code=404, detail="Run not found")
     _ensure_run_access(session, user, run, "editor")
     svc = OrchestratorService(session)
-    run = svc.resume_run(UUID(run_id))
+    run = svc.dead_letter_replay(UUID(run_id), mode="from-last-failed", requested_by_user_id=user.id)
     return RunEnqueueResponse(run_id=run.id, status=run.status, queue_status=run.queue_status, message="Run retry requested")
 
 
