@@ -1,0 +1,180 @@
+{
+  "all_valid": true,
+  "v1": [
+    {
+      "file": "data_examples\\pm\\pm.train.sample.jsonl",
+      "passed": 180,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\pm\\pm.valid.sample.jsonl",
+      "passed": 45,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\architect\\architect.train.sample.jsonl",
+      "passed": 320,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\architect\\architect.valid.sample.jsonl",
+      "passed": 80,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\dev-fe\\dev-fe.train.sample.jsonl",
+      "passed": 180,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\dev-fe\\dev-fe.valid.sample.jsonl",
+      "passed": 45,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\dev-be\\dev-be.train.sample.jsonl",
+      "passed": 180,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\dev-be\\dev-be.valid.sample.jsonl",
+      "passed": 45,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\dev-db\\dev-db.train.sample.jsonl",
+      "passed": 180,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\dev-db\\dev-db.valid.sample.jsonl",
+      "passed": 45,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\qa\\qa.train.sample.jsonl",
+      "passed": 180,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\qa\\qa.valid.sample.jsonl",
+      "passed": 45,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\secops\\secops.train.sample.jsonl",
+      "passed": 180,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\secops\\secops.valid.sample.jsonl",
+      "passed": 45,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\manager\\manager.train.sample.jsonl",
+      "passed": 180,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_examples\\manager\\manager.valid.sample.jsonl",
+      "passed": 45,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    }
+  ],
+  "runtime": [
+    {
+      "file": "data_runtime_exports\\step7_2_sample\\architect.runtime.step7-2.sample.jsonl",
+      "passed": 3,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_runtime_exports\\step7_2_sample\\dev-be.runtime.step7-2.sample.jsonl",
+      "passed": 3,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_runtime_exports\\step7_2_sample\\dev-db.runtime.step7-2.sample.jsonl",
+      "passed": 2,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_runtime_exports\\step7_2_sample\\dev-fe.runtime.step7-2.sample.jsonl",
+      "passed": 3,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_runtime_exports\\step7_2_sample\\manager.runtime.step7-2.sample.jsonl",
+      "passed": 2,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_runtime_exports\\step7_2_sample\\pm.runtime.step7-2.sample.jsonl",
+      "passed": 3,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_runtime_exports\\step7_2_sample\\qa.runtime.step7-2.sample.jsonl",
+      "passed": 2,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "data_runtime_exports\\step7_2_sample\\secops.runtime.step7-2.sample.jsonl",
+      "passed": 2,
+      "failed": 0,
+      "valid": true,
+      "errors": []
+    }
+  ],
+  "totals": {
+    "passed": 1995,
+    "failed": 0,
+    "files": 24
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "version": "step7-2",
+  "total": 20,
+  "roles": {
+    "pm": 3,
+    "architect": 3,
+    "dev-fe": 3,
+    "dev-be": 3,
+    "dev-db": 2,
+    "qa": 2,
+    "secops": 2,
+    "manager": 2
+  }
+}

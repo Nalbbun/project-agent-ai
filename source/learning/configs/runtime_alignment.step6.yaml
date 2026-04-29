@@ -1,0 +1,76 @@
+version: step6
+generated_from:
+  runtime_agents: source/runtime/manager-orchestrator/config/agents.yaml
+  runtime_router: source/runtime/work_proxy_deploy/configs/vllm_request_router.local.yaml
+  runtime_validator: source/runtime/manager-orchestrator/backend/app/services/schema_validator.py
+  learning_adapter_registry: source/learning/configs/adapter_registry.local.yaml
+
+roles:
+  manager:
+    agent_code: manager
+    prompt_key: manager
+    adapter: manager-lora
+    router_backend: exaone-workflow
+    required_output_keys: [execution_plan, missing_info_questions, merge_strategy]
+    runtime_extensions: [run_metadata, replay_audit, approval_summary, final_summary]
+  pm:
+    agent_code: pm
+    prompt_key: pm
+    adapter: pm-lora
+    router_backend: exaone-workflow
+    required_output_keys: [summary, functional_requirements, non_functional_requirements, questions, acceptance_criteria]
+    runtime_extensions: [rag_context, project_knowledge_refs]
+  architect:
+    agent_code: architect
+    prompt_key: architect
+    adapter: architect-lora
+    router_backend: qwen-general
+    required_output_keys: [architecture_style, components, apis, database, sequence, adrs]
+    runtime_extensions: [rag_context, project_knowledge_refs, adr_trace]
+  dev-fe:
+    agent_code: dev-fe
+    prompt_key: dev_fe
+    adapter: dev-fe-lora
+    router_backend: qwen-coder
+    required_output_keys: [deliverables, files]
+    runtime_extensions: [tool_report, artifact_refs, sandbox_result]
+  dev-be:
+    agent_code: dev-be
+    prompt_key: dev_be
+    adapter: dev-be-lora
+    router_backend: qwen-coder
+    required_output_keys: [deliverables, files]
+    runtime_extensions: [tool_report, artifact_refs, sandbox_result]
+  dev-db:
+    agent_code: dev-db
+    prompt_key: dev_db
+    adapter: dev-db-lora
+    router_backend: qwen-coder
+    required_output_keys: [ddl, indexes, migration]
+    runtime_extensions: [tool_report, migration_smoke_result, sandbox_result]
+  qa:
+    agent_code: qa
+    prompt_key: qa
+    adapter: qa-lora
+    router_backend: qwen-general
+    required_output_keys: [verdict, test_cases]
+    runtime_extensions: [tool_report, replay_diff, acceptance_evidence]
+  secops:
+    agent_code: secops
+    prompt_key: secops
+    adapter: secops-lora
+    router_backend: qwen-general
+    required_output_keys: [verdict, findings, hardening_actions]
+    runtime_extensions: [scan_report, sandbox_policy, secret_findings]
+
+next_scripts:
+  - source/learning/scripts/check_runtime_alignment.py
+  - source/learning/scripts/export_runtime_traces.py
+  - source/learning/scripts/build_schema_v2_samples.py
+
+validation:
+  sample_validation: passed
+  sample_files: 16
+  sample_rows_passed: 1975
+  sample_rows_failed: 0
+

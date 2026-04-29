@@ -1,0 +1,110 @@
+{
+  "version": "step7-2",
+  "roles": {
+    "architect": {
+      "samples": 3,
+      "schema_pass_rate": 1.0,
+      "runtime_reward_avg": 0.875,
+      "reward_detail_avg": {
+        "approval_readiness": 0.075,
+        "rag_grounding": 0.15,
+        "replay_recovery": 0.1,
+        "runtime_trace": 0.2,
+        "sandbox_safety": 0.15,
+        "tool_report": 0.2
+      }
+    },
+    "dev-be": {
+      "samples": 3,
+      "schema_pass_rate": 1.0,
+      "runtime_reward_avg": 0.875,
+      "reward_detail_avg": {
+        "approval_readiness": 0.075,
+        "rag_grounding": 0.15,
+        "replay_recovery": 0.1,
+        "runtime_trace": 0.2,
+        "sandbox_safety": 0.15,
+        "tool_report": 0.2
+      }
+    },
+    "dev-db": {
+      "samples": 2,
+      "schema_pass_rate": 1.0,
+      "runtime_reward_avg": 0.8875,
+      "reward_detail_avg": {
+        "approval_readiness": 0.075,
+        "rag_grounding": 0.15,
+        "replay_recovery": 0.1125,
+        "runtime_trace": 0.2,
+        "sandbox_safety": 0.15,
+        "tool_report": 0.2
+      }
+    },
+    "dev-fe": {
+      "samples": 3,
+      "schema_pass_rate": 1.0,
+      "runtime_reward_avg": 0.85,
+      "reward_detail_avg": {
+        "approval_readiness": 0.075,
+        "rag_grounding": 0.15,
+        "replay_recovery": 0.075,
+        "runtime_trace": 0.2,
+        "sandbox_safety": 0.15,
+        "tool_report": 0.2
+      }
+    },
+    "manager": {
+      "samples": 2,
+      "schema_pass_rate": 1.0,
+      "runtime_reward_avg": 0.925,
+      "reward_detail_avg": {
+        "approval_readiness": 0.15,
+        "rag_grounding": 0.15,
+        "replay_recovery": 0.075,
+        "runtime_trace": 0.2,
+        "sandbox_safety": 0.15,
+        "tool_report": 0.2
+      }
+    },
+    "pm": {
+      "samples": 3,
+      "schema_pass_rate": 1.0,
+      "runtime_reward_avg": 0.85,
+      "reward_detail_avg": {
+        "approval_readiness": 0.075,
+        "rag_grounding": 0.15,
+        "replay_recovery": 0.075,
+        "runtime_trace": 0.2,
+        "sandbox_safety": 0.15,
+        "tool_report": 0.2
+      }
+    },
+    "qa": {
+      "samples": 2,
+      "schema_pass_rate": 1.0,
+      "runtime_reward_avg": 0.85,
+      "reward_detail_avg": {
+        "approval_readiness": 0.075,
+        "rag_grounding": 0.15,
+        "replay_recovery": 0.075,
+        "runtime_trace": 0.2,
+        "sandbox_safety": 0.15,
+        "tool_report": 0.2
+      }
+    },
+    "secops": {
+      "samples": 2,
+      "schema_pass_rate": 1.0,
+      "runtime_reward_avg": 0.8875,
+      "reward_detail_avg": {
+        "approval_readiness": 0.075,
+        "rag_grounding": 0.15,
+        "replay_recovery": 0.1125,
+        "runtime_trace": 0.2,
+        "sandbox_safety": 0.15,
+        "tool_report": 0.2
+      }
+    }
+  },
+  "total_samples": 20
+}

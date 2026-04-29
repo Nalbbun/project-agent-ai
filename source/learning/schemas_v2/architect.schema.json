@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Architect Agent Training Sample v2",
+  "type": "object",
+  "$defs": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "source",
+        "version"
+      ],
+      "additionalProperties": true
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "role": {
+      "const": "architect"
+    },
+    "lang": {
+      "enum": [
+        "ko",
+        "en",
+        "mixed"
+      ]
+    },
+    "domain": {
+      "type": "string"
+    },
+    "difficulty": {
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ]
+    },
+    "input": {
+      "type": "object",
+      "properties": {
+        "requirements": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "requirements"
+      ],
+      "additionalProperties": true
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "architecture_style": {
+          "type": "string"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "responsibility": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "responsibility"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "apis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "purpose": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "method",
+              "path",
+              "purpose"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "database": {
+          "type": "object",
+          "properties": {
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "entities"
+          ],
+          "additionalProperties": true
+        },
+        "sequence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "adrs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "architecture_style",
+        "components",
+        "apis",
+        "database",
+        "sequence",
+        "adrs"
+      ],
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "runtime": {
+          "$ref": "common-runtime.schema.json"
+        }
+      },
+      "required": [
+        "source",
+        "version"
+      ],
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "id",
+    "role",
+    "lang",
+    "domain",
+    "difficulty",
+    "input",
+    "output",
+    "metadata"
+  ],
+  "additionalProperties": false,
+  "$id": "Architect Agent Training Sample"
+}

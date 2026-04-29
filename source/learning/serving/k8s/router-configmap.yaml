@@ -4,36 +4,146 @@ metadata:
   name: agent-router-config
 data:
   routing.yaml: |
+    router:
+      name: multi-agent-role-router
+      request_role_fields:
+        - agent_role
+        - extra_body.agent_role
+        - extra_body.role
+        - metadata.agent_role
+        - metadata.role
+      request_task_fields:
+        - metadata.task
+      propagate_headers:
+        - x-request-id
+        - x-trace-id
+      default_generation:
+        temperature: 0.2
+        top_p: 0.95
+        max_tokens: 4096
+      default_connect_timeout_seconds: 10
+      default_request_timeout_seconds: 180
+      trace_response_headers: true
+      emit_router_metadata: true
+      policies:
+        strip_router_only_fields: true
+        unknown_role_action: reject
+        missing_role_message: agent_role is required
+
+    backends:
+      qwen-general:
+        base_url: http://vllm-general:8000/v1
+        health_url: http://vllm-general:8000/health
+        api_key_env: VLLM_ROUTER_API_KEY
+        connect_timeout_seconds: 10
+        timeout_seconds: 180
+        max_retries: 2
+
+      qwen-coder:
+        base_url: http://vllm-coder:8001/v1
+        health_url: http://vllm-coder:8001/health
+        api_key_env: VLLM_ROUTER_API_KEY
+        connect_timeout_seconds: 10
+        timeout_seconds: 180
+        max_retries: 2
+
+      exaone-workflow:
+        base_url: http://vllm-exaone:8002/v1
+        health_url: http://vllm-exaone:8002/health
+        api_key_env: VLLM_ROUTER_API_KEY
+        connect_timeout_seconds: 10
+        timeout_seconds: 180
+        max_retries: 2
+
     routes:
       pm:
-        endpoint: http://vllm-exaone:8002/v1
-        model: exaone-workflow
-        adapter: pm-lora
-      architect:
-        endpoint: http://vllm-general:8000/v1
-        model: qwen-general
-        adapter: architect-lora
-      dev-fe:
-        endpoint: http://vllm-coder:8001/v1
-        model: qwen-coder
-        adapter: dev-fe-lora
-      dev-be:
-        endpoint: http://vllm-coder:8001/v1
-        model: qwen-coder
-        adapter: dev-be-lora
-      dev-db:
-        endpoint: http://vllm-coder:8001/v1
-        model: qwen-coder
-        adapter: dev-db-lora
-      qa:
-        endpoint: http://vllm-general:8000/v1
-        model: qwen-general
-        adapter: qa-lora
-      secops:
-        endpoint: http://vllm-general:8000/v1
-        model: qwen-general
-        adapter: secops-lora
+        backend: exaone-workflow
+        target_model: pm-lora
+        fallback:
+          - backend: qwen-general
+            target_model: qwen-general
+        generation:
+          temperature: 0.15
+          max_tokens: 3072
+
       manager:
-        endpoint: http://vllm-exaone:8002/v1
-        model: exaone-workflow
-        adapter: manager-lora
+        backend: exaone-workflow
+        target_model: manager-lora
+        fallback:
+          - backend: qwen-general
+            target_model: qwen-general
+        generation:
+          temperature: 0.2
+          max_tokens: 3072
+
+      architect:
+        backend: qwen-general
+        target_model: architect-lora
+        fallback:
+          - backend: exaone-workflow
+            target_model: exaone-workflow
+        generation:
+          temperature: 0.1
+          max_tokens: 3072
+
+      dev-fe:
+        backend: qwen-coder
+        target_model: dev-fe-lora
+        fallback:
+          - backend: qwen-general
+            target_model: qwen-general
+        generation:
+          temperature: 0.1
+          max_tokens: 4096
+
+      dev-be:
+        backend: qwen-coder
+        target_model: dev-be-lora
+        fallback:
+          - backend: qwen-general
+            target_model: qwen-general
+        generation:
+          temperature: 0.1
+          max_tokens: 4096
+
+      dev-db:
+        backend: qwen-coder
+        target_model: dev-db-lora
+        fallback:
+          - backend: qwen-general
+            target_model: qwen-general
+        generation:
+          temperature: 0.05
+          max_tokens: 3072
+
+      qa:
+        backend: qwen-general
+        target_model: qa-lora
+        fallback:
+          - backend: exaone-workflow
+            target_model: exaone-workflow
+        generation:
+          temperature: 0.1
+          max_tokens: 3072
+
+      secops:
+        backend: qwen-general
+        target_model: secops-lora
+        fallback:
+          - backend: qwen-coder
+            target_model: qwen-coder
+        generation:
+          temperature: 0.05
+          max_tokens: 3072
+
+    examples:
+      chat_request:
+        model: router-auto
+        messages:
+          - role: system
+            content: Return structured JSON only.
+          - role: user
+            content: Design a payment approval backend API.
+        extra_body:
+          agent_role: architect
+

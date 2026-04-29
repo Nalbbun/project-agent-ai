@@ -1,0 +1,135 @@
+{
+  "$id": "common-runtime.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Runtime Evidence Metadata",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "step_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "project_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "phase": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "agent_code": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "run_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "queue_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "backend_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "target_model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schema_valid": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "execution_ms": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "retry_count": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "failure_category": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "rag_context": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "replay_audits": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "tool_reports": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

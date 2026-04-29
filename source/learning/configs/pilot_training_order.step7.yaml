@@ -1,0 +1,52 @@
+version: step7
+strategy: runtime-trace-first
+principle: "Export runtime traces, validate schema v2, score reward v2, then fine-tune in low-risk role groups."
+
+waves:
+  - wave: 1
+    name: planning-roles
+    roles: [pm, architect, manager]
+    reason: "Text planning roles are lowest-risk and benefit immediately from project knowledge/RAG context."
+    prerequisites:
+      - check_runtime_alignment_passed
+      - schema_v2_valid
+      - runtime_trace_export_available
+    eval_focus:
+      - schema_pass_rate
+      - rag_grounding
+      - approval_readiness
+      - replay_recovery
+
+  - wave: 2
+    name: implementation-roles
+    roles: [dev-fe, dev-be, dev-db]
+    reason: "Implementation roles should wait for tool report and sandbox evidence because generated files are executable artifacts."
+    prerequisites:
+      - wave_1_eval_baseline
+      - tool_report_reward_available
+      - sandbox_safety_reward_available
+    eval_focus:
+      - schema_pass_rate
+      - build_test_lint_type_status
+      - sandbox_safety
+      - artifact_materialization
+
+  - wave: 3
+    name: verification-roles
+    roles: [qa, secops]
+    reason: "Verification roles need replay, approval, scan, and sandbox evidence to avoid shallow pass/fail judgments."
+    prerequisites:
+      - wave_2_tool_report_baseline
+      - replay_audit_exports_available
+      - scan_report_exports_available
+    eval_focus:
+      - replay_recovery
+      - approval_readiness
+      - tool_report
+      - sandbox_safety
+
+commands:
+  alignment_check: "python scripts/check_runtime_alignment.py --schemas schemas_v2 --report reports/runtime_alignment.step7.json"
+  build_schema_v2: "python scripts/build_schema_v2_samples.py"
+  export_runtime_traces: "python scripts/export_runtime_traces.py --database-url \"$DATABASE_URL\" --out-dir data_runtime_exports/step7 --limit 500"
+

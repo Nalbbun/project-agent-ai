@@ -1,0 +1,211 @@
+{
+  "ok": true,
+  "checked_agents": 8,
+  "findings": [],
+  "rows": [
+    {
+      "agent_code": "manager",
+      "role": "manager",
+      "prompt_key": "manager",
+      "adapter": "manager-lora",
+      "router_backend": "exaone-workflow",
+      "router_target_model": "manager-lora",
+      "runtime_required_keys": [
+        "execution_plan",
+        "missing_info_questions",
+        "merge_strategy"
+      ],
+      "schema_required_keys": [
+        "execution_plan",
+        "missing_info_questions",
+        "merge_strategy"
+      ],
+      "checks": {
+        "adapter_registered": true,
+        "router_route_present": true,
+        "router_target_matches_adapter": true,
+        "schema_present": true,
+        "schema_required_matches_runtime": true
+      }
+    },
+    {
+      "agent_code": "pm",
+      "role": "pm",
+      "prompt_key": "pm",
+      "adapter": "pm-lora",
+      "router_backend": "exaone-workflow",
+      "router_target_model": "pm-lora",
+      "runtime_required_keys": [
+        "summary",
+        "functional_requirements",
+        "non_functional_requirements",
+        "questions",
+        "acceptance_criteria"
+      ],
+      "schema_required_keys": [
+        "summary",
+        "functional_requirements",
+        "non_functional_requirements",
+        "questions",
+        "acceptance_criteria"
+      ],
+      "checks": {
+        "adapter_registered": true,
+        "router_route_present": true,
+        "router_target_matches_adapter": true,
+        "schema_present": true,
+        "schema_required_matches_runtime": true
+      }
+    },
+    {
+      "agent_code": "architect",
+      "role": "architect",
+      "prompt_key": "architect",
+      "adapter": "architect-lora",
+      "router_backend": "qwen-general",
+      "router_target_model": "architect-lora",
+      "runtime_required_keys": [
+        "architecture_style",
+        "components",
+        "apis",
+        "database",
+        "sequence",
+        "adrs"
+      ],
+      "schema_required_keys": [
+        "architecture_style",
+        "components",
+        "apis",
+        "database",
+        "sequence",
+        "adrs"
+      ],
+      "checks": {
+        "adapter_registered": true,
+        "router_route_present": true,
+        "router_target_matches_adapter": true,
+        "schema_present": true,
+        "schema_required_matches_runtime": true
+      }
+    },
+    {
+      "agent_code": "dev-fe",
+      "role": "dev-fe",
+      "prompt_key": "dev_fe",
+      "adapter": "dev-fe-lora",
+      "router_backend": "qwen-coder",
+      "router_target_model": "dev-fe-lora",
+      "runtime_required_keys": [
+        "deliverables",
+        "files"
+      ],
+      "schema_required_keys": [
+        "files",
+        "deliverables"
+      ],
+      "checks": {
+        "adapter_registered": true,
+        "router_route_present": true,
+        "router_target_matches_adapter": true,
+        "schema_present": true,
+        "schema_required_matches_runtime": true
+      }
+    },
+    {
+      "agent_code": "dev-be",
+      "role": "dev-be",
+      "prompt_key": "dev_be",
+      "adapter": "dev-be-lora",
+      "router_backend": "qwen-coder",
+      "router_target_model": "dev-be-lora",
+      "runtime_required_keys": [
+        "deliverables",
+        "files"
+      ],
+      "schema_required_keys": [
+        "files",
+        "deliverables"
+      ],
+      "checks": {
+        "adapter_registered": true,
+        "router_route_present": true,
+        "router_target_matches_adapter": true,
+        "schema_present": true,
+        "schema_required_matches_runtime": true
+      }
+    },
+    {
+      "agent_code": "dev-db",
+      "role": "dev-db",
+      "prompt_key": "dev_db",
+      "adapter": "dev-db-lora",
+      "router_backend": "qwen-coder",
+      "router_target_model": "dev-db-lora",
+      "runtime_required_keys": [
+        "ddl",
+        "indexes",
+        "migration"
+      ],
+      "schema_required_keys": [
+        "ddl",
+        "migration",
+        "indexes"
+      ],
+      "checks": {
+        "adapter_registered": true,
+        "router_route_present": true,
+        "router_target_matches_adapter": true,
+        "schema_present": true,
+        "schema_required_matches_runtime": true
+      }
+    },
+    {
+      "agent_code": "qa",
+      "role": "qa",
+      "prompt_key": "qa",
+      "adapter": "qa-lora",
+      "router_backend": "qwen-general",
+      "router_target_model": "qa-lora",
+      "runtime_required_keys": [
+        "verdict",
+        "test_cases"
+      ],
+      "schema_required_keys": [
+        "test_cases",
+        "verdict"
+      ],
+      "checks": {
+        "adapter_registered": true,
+        "router_route_present": true,
+        "router_target_matches_adapter": true,
+        "schema_present": true,
+        "schema_required_matches_runtime": true
+      }
+    },
+    {
+      "agent_code": "secops",
+      "role": "secops",
+      "prompt_key": "secops",
+      "adapter": "secops-lora",
+      "router_backend": "qwen-general",
+      "router_target_model": "secops-lora",
+      "runtime_required_keys": [
+        "verdict",
+        "findings",
+        "hardening_actions"
+      ],
+      "schema_required_keys": [
+        "findings",
+        "verdict",
+        "hardening_actions"
+      ],
+      "checks": {
+        "adapter_registered": true,
+        "router_route_present": true,
+        "router_target_matches_adapter": true,
+        "schema_present": true,
+        "schema_required_matches_runtime": true
+      }
+    }
+  ]
+}
